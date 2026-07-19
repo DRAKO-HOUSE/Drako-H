@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRAKO HOUSE - Cardápio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="overlay-fechado">
+        <h1>LOJA FECHADA</h1>
+        <p>No momento não estamos aceitando pedidos.</p>
+        <p>Retornaremos em breve!</p>
+    </div>
+
+    <header class="main-header">
+        <img src="./assets/logo.jpeg" alt="Drakohouse Logo" class="logo">
+        <div class="header-text">
+            <h1>DRAKO HOUSE</h1>
+            <p>Sua dose diária de felicidade.</p>
+        </div>
+    </header>
+
+    <nav class="menu-categorias">
+        <a href="#batatas" class="active">Batatas</a>
+        <a href="#bebidas">Bebidas</a>
+    </nav>
+
+    <main class="container">
+        <section id="batatas" class="secao-categoria">
+            <h2 class="categoria-titulo">SEÇÃO: BATATAS</h2>
+            <div class="cardapio" id="lista-batatas">
+                <!-- Dinâmico / Firebase -->
+            </div>
+        </section>
+
+        <section id="bebidas" class="secao-categoria">
+            <h2 class="categoria-titulo">SEÇÃO: BEBIDAS</h2>
+            <div class="cardapio" id="lista-bebidas">
+                <!-- Dinâmico / Firebase -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="carrinho-fixo">
+        <div id="dados-entrega" class="dados-entrega">
+            <h3 class="titulo-entrega">📍 Dados da Entrega</h3>
+            <select id="retirada ou entrega" onchange="mostrarCamposEntrega()" class="form-control">
+                <option value="entrega">Entrega</option>
+                <option value="retirada">Retirada no local</option>
+            </select>
+            <input type="text" id="nome-cliente" placeholder="Seu nome" required>
+            <input type="text" id="endereco-cliente" placeholder="Rua / Logradouro" required>
+
+            <div class="input-linha">
+                <input type="text" id="numero-casa" placeholder="Nº" style="width: 30%;">
+            </div>
+            <div class="form-group">
+                <select id="bairro" onchange="calcularFrete()" class="form-control" style="width: 100%; padding: 10px; border-radius: 8px;">
+                    <option value="" disabled selected>Clique para escolher o bairro...</option>
+                    <option value="0">Novo Oeste</option>
+                    <option value="0">Centro</option>
+                    <option value="0">Estação da Luiz</option>
+                    <option value="0">Jardim Araújo</option>
+                    <option value="0">Jardim Formosa</option>
+                    <option value="0">José Mendes</option>
+                    <option value="0">Nova Avenida</option>
+                    <option value="0">Nova Morada</option>
+                    <option value="0">Oliveira</option>
+                    <option value="0">Planaltino</option>
+                    <option value="0">São Luiz</option>
+                    <option value="0">Vicente Ferreira</option>
+                </select>
+            </div>
+
+            <div id="exibicao-taxa" style="display:none; margin-top: 15px; padding: 12px; border-left: 5px solid #e67e22; background-color: #fff3e0;">
+                <span id="texto-taxa" style="font-size: 1.1em;"></span>
+            </div>
+            <input type="text" id="ponto-referencia" placeholder="Ponto de referência (opcional)">
+
+            <div class="pagamento-selecao">
+                <label for="pagamento">Forma de Pagamento:</label>
+                <select id="pagamento">
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Pix">Pix</option>
+                    <option value="Cartão">Cartão (Maquininha)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="resumo-info">
+            <div class="textos-resumo">
+                <p>RESUMO DO PEDIDO</p>
+                <span>Itens: <span id="total-itens">0</span> | Total: R$ <span id="preco-total">0,00</span></span>
+            </div>
+
+            <div class="botoes-carrinho" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                <button id="btn-finalizar" onclick="enviarPedido()">Finalizar via WhatsApp</button>
+                <button id="btn-voltar" onclick="fecharDadosEntrega()" style="display: none; background-color: #777; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer;">
+                    ← Adicionar mais itens
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSy...",
+            authDomain: "afiliados-e32b5.firebaseapp.com",
+            databaseURL: "https://afiliados-e32b5-default-rtdb.firebaseio.com",
+            projectId: "afiliados-e32b5",
+            storageBucket: "afiliados-e32b5.appspot.com",
+            messagingSenderId: "36735515286",
+            appId: "1:36735515286:web:..."
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="script.js"></script>
+
+    <!-- Modal de Admin -->
+    <div id="modal-admin" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; z-index:10001; border-radius:15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; color: black;">
+        <h3 style="margin-top:0;">Acesso Administrativo</h3>
+
+        <div id="admin-login">
+            <input type="password" id="senha-admin" placeholder="Digite a senha" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:8px; box-sizing: border-box;">
+            <button onclick="verificarSenha()" style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Entrar</button>
+        </div>
+
+        <div id="admin-controles" style="display:none;">
+            <p><strong>Status Atual da Loja:</strong></p>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button onclick="alternarLoja(true)" style="flex:1; padding:10px; background:#25D366; color:white; border:none; border-radius:8px; cursor:pointer;">ABRIR LOJA</button>
+                <button onclick="alternarLoja(false)" style="flex:1; padding:10px; background:#B02A37; color:white; border:none; border-radius:8px; cursor:pointer;">FECHAR LOJA</button>
+            </div>
+
+            <hr style="margin: 15px 0;">
+            
+            <h4>Gerenciar Produtos</h4>
+            <div id="form-produto" style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                <input type="hidden" id="prod-id">
+                <input type="text" id="prod-nome" placeholder="Nome do Produto" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
+                <input type="text" id="prod-desc" placeholder="Descrição" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
+                
+                <!-- Novo campo de Upload de Imagem e Preview -->
+                <label style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Foto do Produto:</label>
+                <input type="file" id="prod-file-input" accept="image/*" onchange="converterImagemParaBase64(this)" style="width:100%; padding:6px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px; background:white;">
+                <input type="hidden" id="prod-foto">
+                <img id="preview-foto" src="" style="max-width: 80px; max-height: 80px; display: none; margin-bottom: 8px; border-radius: 4px; object-fit: cover;" alt="Preview">
+
+                <select id="prod-categoria" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
+                    <option value="batatas">Batatas (Com Tamanhos M e G)</option>
+                    <option value="bebidas">Bebidas (Preço Único)</option>
+                </select>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <input type="number" step="0.01" id="prod-preco-m" placeholder="Preço M (ou Preço Único)" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                    <input type="number" step="0.01" id="prod-preco-g" placeholder="Preço G (Opcional)" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                </div>
+                <button onclick="salvarProdutoFirebase()" style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Salvar Produto</button>
+            </div>
+
+            <div id="lista-produtos-admin" style="max-height: 200px; overflow-y: auto;">
+                <!-- Lista para editar/excluir -->
+            </div>
+        </div>
+
+        <button onclick="document.getElementById('modal-admin').style.display='none'" style="margin-top:15px; background:none; border:none; color:#666; cursor:pointer; width:100%;">Sair/Fechar</button>
+    </div>
+
+</body>
+</html>
