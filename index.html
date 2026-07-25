@@ -27,13 +27,22 @@
 
     <nav class="menu-categorias">
         <a href="#batatas" class="active">Batatas</a>
+        
         <a href="#bebidas">Bebidas</a>
+        <a href="#combos">Combos</a>
     </nav>
 
     <main class="container">
         <section id="batatas" class="secao-categoria">
             <h2 class="categoria-titulo">SEÇÃO: BATATAS</h2>
             <div class="cardapio" id="lista-batatas">
+                <!-- Dinâmico / Firebase -->
+            </div>
+        </section>
+
+        <section id="combos" class="secao-categoria">
+            <h2 class="categoria-titulo">SEÇÃO: COMBOS</h2>
+            <div class="cardapio" id="lista-combos">
                 <!-- Dinâmico / Firebase -->
             </div>
         </section>
@@ -157,6 +166,7 @@
 
                 <select id="prod-categoria" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
                     <option value="batatas">Batatas (Com Tamanhos M e G)</option>
+                    <option value="combos">Combos (preco unico)</option>
                     <option value="bebidas">Bebidas (Preço Único)</option>
                 </select>
                 <div style="display: flex; gap: 8px; margin-bottom: 8px;">
@@ -172,6 +182,34 @@
         </div>
 
         <button onclick="document.getElementById('modal-admin').style.display='none'" style="margin-top:15px; background:none; border:none; color:#666; cursor:pointer; width:100%;">Sair/Fechar</button>
+    </div>
+
+    <!-- Modal de Seleção de Sabores do Combo -->
+    <div id="modal-combo-sabores" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 10002; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; color: black;">
+            <h3 id="modal-combo-titulo" style="margin-top: 0;">Escolha os sabores</h3>
+            <p id="modal-combo-descricao" style="font-size: 0.9rem; color: #555;"></p>
+            <div id="combo-sabores-opcoes">
+                <!-- Opções de sabores (batatas) serão inseridas aqui pelo JS -->
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="btn-confirmar-combo" style="flex: 1; padding: 12px; background: #2E5902; color: white; border: none; border-radius: 8px; cursor: pointer;">Confirmar Seleção</button>
+                <button onclick="fecharModalSabores()" style="flex: 1; padding: 12px; background: #777; color: white; border: none; border-radius: 8px; cursor: pointer;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Visualização do Carrinho -->
+    <div id="modal-carrinho" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 10002; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; color: black;">
+            <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Meu Carrinho</h3>
+            <div id="lista-itens-carrinho" style="margin-top: 15px;">
+                <!-- Itens do carrinho serão inseridos aqui pelo JS -->
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="fecharModalCarrinho()" style="width: 100%; padding: 12px; background: #777; color: white; border: none; border-radius: 8px; cursor: pointer;">Fechar</button>
+            </div>
+        </div>
     </div>
 
 </body>

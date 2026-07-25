@@ -11,10 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
         firebase.database().ref('produtos').on('value', (snapshot) => {
             const dados = snapshot.val();
             const listaBatatas = document.getElementById('lista-batatas');
+            const listaCombos = document.getElementById('lista-combos');
             const listaBebidas = document.getElementById('lista-bebidas');
             
             if(listaBatatas) listaBatatas.innerHTML = '';
-            if(listaBebidas) listaBebidas.innerHTML = '';
+            if(listaCombos) listaCombos.innerHTML = '';
+            if(listaBebidas) listaBebidas.innerHTML = ''; // Limpa a nova seção de bebidas
 
             if (!dados) return;
 
@@ -23,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const card = document.createElement('div');
                 card.className = 'item-produto';
 
-                if (produto.categoria === 'batatas') {
+                if (produto.categoria === 'batatas' && listaBatatas) {
                     card.innerHTML = `
                         <img src="${produto.foto}" alt="${produto.nome}">
                         <h3>${produto.nome}</h3>
@@ -45,8 +47,20 @@ document.addEventListener('DOMContentLoaded', () => {
                             <button onclick="alterarQtd(this, 1, '${id}', '${produto.nome}')">+</button>
                         </div>
                     `;
-                    if(listaBatatas) listaBatatas.appendChild(card);
-                } else {
+                    listaBatatas.appendChild(card);
+                } else if (produto.categoria === 'combos' && listaCombos) {
+                    // Para COMBOS, o botão abre o modal de seleção de sabores
+                    card.innerHTML = `
+                        <img src="${produto.foto}" alt="${produto.nome}">
+                        <h3>${produto.nome}</h3>
+                        <p>${produto.descricao || ''}</p>
+                        <span class="preco">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
+                        <button class="btn-add-combo" onclick='abrirModalSabores(${JSON.stringify({id, ...produto})})' style="width:100%; padding:10px; background:#516E03; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">Escolher Sabores</button>
+                    `;
+                    card.classList.add('item-produto-combo');
+                    listaCombos.appendChild(card);
+                } else if (produto.categoria === 'bebidas' && listaBebidas) {
+                    // Para BEBIDAS, manter o seletor de quantidade +/-
                     card.innerHTML = `
                         <img src="${produto.foto}" alt="${produto.nome}">
                         <h3>${produto.nome}</h3>
@@ -58,10 +72,90 @@ document.addEventListener('DOMContentLoaded', () => {
                             <button onclick="alterarQtd(this, 1, '${id}', '${produto.nome}', 'Único', ${produto.precoM})">+</button>
                         </div>
                     `;
-                    if(listaBebidas) listaBebidas.appendChild(card);
+                    listaBebidas.appendChild(card);
                 }
             });
         });
+    }
+
+    // --- LÓGICA DO MODAL DE SELEÇÃO DE SABORES ---
+    let comboAtualParaSelecao = {};
+    const NUMERO_DE_SABORES_A_ESCOLHER = 2; // Defina aqui quantos sabores o cliente pode escolher
+
+    window.abrirModalSabores = (produtoCombo) => {
+        comboAtualParaSelecao = produtoCombo;
+        const modal = document.getElementById('modal-combo-sabores');
+        document.getElementById('modal-combo-titulo').textContent = `Escolha os sabores para: ${produtoCombo.nome}`;
+        document.getElementById('modal-combo-descricao').textContent = `Você pode escolher ${NUMERO_DE_SABORES_A_ESCOLHER} sabores.`;
+        const opcoesContainer = document.getElementById('combo-sabores-opcoes');
+        opcoesContainer.innerHTML = ''; // Limpa opções anteriores
+
+        // Busca todos os produtos da categoria 'batatas' para usar como opções
+        firebase.database().ref('produtos').orderByChild('categoria').equalTo('batatas').once('value', (snapshot) => {
+            const batatas = snapshot.val();
+            if (!batatas) {
+                opcoesContainer.innerHTML = '<p>Nenhum sabor de batata encontrado.</p>';
+                return;
+            }
+            Object.values(batatas).forEach(batata => {
+                const label = document.createElement('label');
+                label.style.cssText = "display: block; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;";
+
+                // Usando innerHTML para incluir o nome e a descrição de forma estruturada
+                label.innerHTML = `
+                    <div style="display: flex; align-items: flex-start;">
+                        <input type="checkbox" value="${batata.nome}" style="margin-top: 4px; margin-right: 10px;">
+                        <div>
+                            <strong style="display: block;">${batata.nome}</strong>
+                            <p style="font-size: 0.8rem; color: #666; margin: 2px 0 0 0; line-height: 1.3;">${batata.descricao || ''}</p>
+                        </div>
+                    </div>
+                `;
+
+                // Adiciona o evento de verificação ao checkbox recém-criado
+                label.querySelector('input[type="checkbox"]').onchange = (event) => {
+                    const selecionados = opcoesContainer.querySelectorAll('input:checked');
+                    if (selecionados.length > NUMERO_DE_SABORES_A_ESCOLHER) {
+                        alert(`Você só pode escolher ${NUMERO_DE_SABORES_A_ESCOLHER} sabores.`);
+                        event.target.checked = false;
+                    }
+                };
+                opcoesContainer.appendChild(label);
+            });
+        });
+
+        document.getElementById('btn-confirmar-combo').onclick = adicionarComboComSaboresAoCarrinho;
+        modal.style.display = 'flex';
+    };
+
+    window.fecharModalSabores = () => {
+        document.getElementById('modal-combo-sabores').style.display = 'none';
+    };
+
+    function adicionarComboComSaboresAoCarrinho() {
+        const selecionados = document.querySelectorAll('#combo-sabores-opcoes input:checked');
+
+        if (selecionados.length !== NUMERO_DE_SABORES_A_ESCOLHER) {
+            alert(`Por favor, escolha exatamente ${NUMERO_DE_SABORES_A_ESCOLHER} sabores.`);
+            return;
+        }
+
+        const saboresEscolhidos = Array.from(selecionados).map(cb => cb.value);
+        const nomeCompleto = `${comboAtualParaSelecao.nome} (${saboresEscolhidos.join(', ')})`;
+        
+        // Usamos um timestamp para garantir uma chave única para cada combo personalizado adicionado
+        // Isso permite adicionar o mesmo combo com diferentes sabores
+        const chaveCarrinho = `combo-${comboAtualParaSelecao.id}-${Date.now()}`;
+
+        // Adiciona o combo como um item único com quantidade 1
+        carrinho[chaveCarrinho] = { 
+            qtd: 1, 
+            nome: nomeCompleto, 
+            preco: comboAtualParaSelecao.precoM 
+        };
+
+        atualizarResumo();
+        fecharModalSabores();
     }
 
     carregarCardapio();
@@ -214,6 +308,30 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.style.backgroundColor = "";
         document.getElementById('btn-voltar').style.display = "none";
     };
+
+    // Lógica para destacar o link ativo no menu de navegação ao rolar
+    const navLinks = document.querySelectorAll('.menu-categorias a');
+    const sections = document.querySelectorAll('.secao-categoria');
+
+    function changeLinkStateOnScroll() {
+        let currentSectionId = '';
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            // Considera a altura do header para a troca ser mais precisa
+            if (window.scrollY >= sectionTop - 100) { 
+                currentSectionId = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${currentSectionId}`) {
+                link.classList.add('active');
+            }
+        });
+    }
+    window.addEventListener('scroll', changeLinkStateOnScroll);
 });
 
 function monitorarStatusLoja() {
@@ -242,7 +360,7 @@ document.addEventListener('keydown', (event) => {
         if (modal) modal.style.display = 'block';
     }
 });
-
+ 
 window.verificarSenha = function() {
     const campoSenha = document.getElementById('senha-admin');
     if (campoSenha.value === SENHA_CORRETA) {
