@@ -13,10 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const listaBatatas = document.getElementById('lista-batatas');
             const listaCombos = document.getElementById('lista-combos');
             const listaBebidas = document.getElementById('lista-bebidas');
+            const listaPasteis = document.getElementById('lista-pasteis');
             
             if(listaBatatas) listaBatatas.innerHTML = '';
             if(listaCombos) listaCombos.innerHTML = '';
             if(listaBebidas) listaBebidas.innerHTML = ''; // Limpa a nova seção de bebidas
+            if(listaPasteis) listaPasteis.innerHTML = '';
 
             if (!dados) return;
 
@@ -59,6 +61,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     card.classList.add('item-produto-combo');
                     listaCombos.appendChild(card);
+                } else if (produto.categoria === 'pasteis' && listaPasteis) {
+                    // Para BEBIDAS, manter o seletor de quantidade +/-
+                    card.innerHTML = `
+                        <img src="${produto.foto}" alt="${produto.nome}">
+                        <h3>${produto.nome}</h3>
+                        <p>${produto.descricao || ''}</p>
+                        <span class="preco" id="preco-exibicao-${id}" style="font-weight:bold; font-size:1.1rem; margin-bottom:8px;">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
+                        <div class="seletor-quantidade">
+                            <button onclick="alterarQtd(this, -1, '${id}', '${produto.nome}', 'Único', ${produto.precoM})">-</button>
+                            <span class="qtd-numero" id="qtd-${id}">0</span>
+                            <button onclick="alterarQtd(this, 1, '${id}', '${produto.nome}', 'Único', ${produto.precoM})">+</button>
+                        </div>
+                    `;
+                    listaPasteis.appendChild(card);
                 } else if (produto.categoria === 'bebidas' && listaBebidas) {
                     // Para BEBIDAS, manter o seletor de quantidade +/-
                     card.innerHTML = `
