@@ -4,21 +4,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let taxaEntregaAtual = 0.0;
     const carrinho = {};
 
-    // Carregar Produtos do Firebase em Tempo Real
+
     function carregarCardapio() {
         if (typeof firebase === 'undefined') return;
-        
+
         firebase.database().ref('produtos').on('value', (snapshot) => {
             const dados = snapshot.val();
             const listaBatatas = document.getElementById('lista-batatas');
             const listaCombos = document.getElementById('lista-combos');
             const listaBebidas = document.getElementById('lista-bebidas');
             const listaPasteis = document.getElementById('lista-pasteis');
-            
-            if(listaBatatas) listaBatatas.innerHTML = '';
-            if(listaCombos) listaCombos.innerHTML = '';
-            if(listaBebidas) listaBebidas.innerHTML = ''; // Limpa a nova seção de bebidas
-            if(listaPasteis) listaPasteis.innerHTML = '';
+
+            if (listaBatatas) listaBatatas.innerHTML = '';
+            if (listaCombos) listaCombos.innerHTML = '';
+            if (listaBebidas) listaBebidas.innerHTML = ''; // Limpa a nova seção de bebidas
+            if (listaPasteis) listaPasteis.innerHTML = '';
 
             if (!dados) return;
 
@@ -51,18 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     listaBatatas.appendChild(card);
                 } else if (produto.categoria === 'combos' && listaCombos) {
-                    // Para COMBOS, o botão abre o modal de seleção de sabores
                     card.innerHTML = `
                         <img src="${produto.foto}" alt="${produto.nome}">
                         <h3>${produto.nome}</h3>
                         <p>${produto.descricao || ''}</p>
                         <span class="preco">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
-                        <button class="btn-add-combo" onclick='abrirModalSabores(${JSON.stringify({id, ...produto})})' style="width:100%; padding:10px; background:#516E03; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">Escolher Sabores</button>
+                        <button class="btn-add-combo" onclick='abrirModalSabores(${JSON.stringify({ id, ...produto })})' style="width:100%; padding:10px; background:#516E03; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">Escolher Sabores</button>
                     `;
                     card.classList.add('item-produto-combo');
                     listaCombos.appendChild(card);
                 } else if (produto.categoria === 'pasteis' && listaPasteis) {
-                    // Para BEBIDAS, manter o seletor de quantidade +/-
                     card.innerHTML = `
                         <img src="${produto.foto}" alt="${produto.nome}">
                         <h3>${produto.nome}</h3>
@@ -76,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     listaPasteis.appendChild(card);
                 } else if (produto.categoria === 'bebidas' && listaBebidas) {
-                    // Para BEBIDAS, manter o seletor de quantidade +/-
                     card.innerHTML = `
                         <img src="${produto.foto}" alt="${produto.nome}">
                         <h3>${produto.nome}</h3>
@@ -94,9 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- LÓGICA DO MODAL DE SELEÇÃO DE SABORES ---
+
     let comboAtualParaSelecao = {};
-    const NUMERO_DE_SABORES_A_ESCOLHER = 2; // Defina aqui quantos sabores o cliente pode escolher
+    const NUMERO_DE_SABORES_A_ESCOLHER = 2;
 
     window.abrirModalSabores = (produtoCombo) => {
         comboAtualParaSelecao = produtoCombo;
@@ -104,9 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modal-combo-titulo').textContent = `Escolha os sabores para: ${produtoCombo.nome}`;
         document.getElementById('modal-combo-descricao').textContent = `Você pode escolher ${NUMERO_DE_SABORES_A_ESCOLHER} sabores.`;
         const opcoesContainer = document.getElementById('combo-sabores-opcoes');
-        opcoesContainer.innerHTML = ''; // Limpa opções anteriores
+        opcoesContainer.innerHTML = '';
 
-        // Busca todos os produtos da categoria 'batatas' para usar como opções
         firebase.database().ref('produtos').orderByChild('categoria').equalTo('batatas').once('value', (snapshot) => {
             const batatas = snapshot.val();
             if (!batatas) {
@@ -117,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const label = document.createElement('label');
                 label.style.cssText = "display: block; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;";
 
-                // Usando innerHTML para incluir o nome e a descrição de forma estruturada
                 label.innerHTML = `
                     <div style="display: flex; align-items: flex-start;">
                         <input type="checkbox" value="${batata.nome}" style="margin-top: 4px; margin-right: 10px;">
@@ -128,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
 
-                // Adiciona o evento de verificação ao checkbox recém-criado
                 label.querySelector('input[type="checkbox"]').onchange = (event) => {
                     const selecionados = opcoesContainer.querySelectorAll('input:checked');
                     if (selecionados.length > NUMERO_DE_SABORES_A_ESCOLHER) {
@@ -158,16 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const saboresEscolhidos = Array.from(selecionados).map(cb => cb.value);
         const nomeCompleto = `${comboAtualParaSelecao.nome} (${saboresEscolhidos.join(', ')})`;
-        
-        // Usamos um timestamp para garantir uma chave única para cada combo personalizado adicionado
-        // Isso permite adicionar o mesmo combo com diferentes sabores
+
         const chaveCarrinho = `combo-${comboAtualParaSelecao.id}-${Date.now()}`;
 
-        // Adiciona o combo como um item único com quantidade 1
-        carrinho[chaveCarrinho] = { 
-            qtd: 1, 
-            nome: nomeCompleto, 
-            preco: comboAtualParaSelecao.precoM 
+        carrinho[chaveCarrinho] = {
+            qtd: 1,
+            nome: nomeCompleto,
+            preco: comboAtualParaSelecao.precoM
         };
 
         atualizarResumo();
@@ -194,8 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const chaveCarrinho = `${id}-${tamanho}`;
         const qtdElement = document.getElementById(`qtd-${id}`);
-        
-        if(!carrinho[chaveCarrinho]) {
+
+        if (!carrinho[chaveCarrinho]) {
             carrinho[chaveCarrinho] = { qtd: 0, nome: `${nomeBase} (${tamanho})`, preco: preco };
         }
 
@@ -204,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (qtdAtual >= 0) {
             carrinho[chaveCarrinho].qtd = qtdAtual;
             if (qtdElement) qtdElement.innerText = qtdAtual;
-            
+
             if (qtdAtual === 0) {
                 delete carrinho[chaveCarrinho];
             }
@@ -263,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             botao.innerText = "Confirmar e Enviar Pedido";
             botao.style.backgroundColor = "#25D366";
             document.getElementById('btn-voltar').style.display = "block";
-            return; 
+            return;
         }
 
         const tipoPedido = document.getElementById('retirada ou entrega').value; // 'entrega' ou 'retirada'
@@ -306,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const chave in carrinho) {
             mensagem += `✅ ${carrinho[chave].qtd}x ${carrinho[chave].nome}\n`;
         }
-        
+
         if (tipoPedido === 'entrega') {
             mensagem += taxaEntregaAtual > 0 ? `\n🛵 *Frete:* R$ ${taxaEntregaAtual.toFixed(2).replace('.', ',')}` : `\n🛵 *Frete:* Grátis`;
             mensagem += `\n*TOTAL FINAL: R$ ${(precoTotalProdutos + taxaEntregaAtual).toFixed(2).replace('.', ',')}*`;
@@ -325,7 +316,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('btn-voltar').style.display = "none";
     };
 
-    // Lógica para destacar o link ativo no menu de navegação ao rolar
     const navLinks = document.querySelectorAll('.menu-categorias a');
     const sections = document.querySelectorAll('.secao-categoria');
 
@@ -334,8 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
-            // Considera a altura do header para a troca ser mais precisa
-            if (window.scrollY >= sectionTop - 100) { 
+            if (window.scrollY >= sectionTop - 100) {
                 currentSectionId = section.getAttribute('id');
             }
         });
@@ -368,7 +357,6 @@ function monitorarStatusLoja() {
 }
 monitorarStatusLoja();
 
-// Atalho Admin (Alt + A)
 const SENHA_CORRETA = "1234";
 document.addEventListener('keydown', (event) => {
     if (event.altKey && (event.key === 'a' || event.key === 'A')) {
@@ -376,8 +364,8 @@ document.addEventListener('keydown', (event) => {
         if (modal) modal.style.display = 'block';
     }
 });
- 
-window.verificarSenha = function() {
+
+window.verificarSenha = function () {
     const campoSenha = document.getElementById('senha-admin');
     if (campoSenha.value === SENHA_CORRETA) {
         document.getElementById('admin-login').style.display = 'none';
@@ -388,7 +376,7 @@ window.verificarSenha = function() {
     }
 };
 
-window.alternarLoja = function(status) {
+window.alternarLoja = function (status) {
     if (typeof firebase !== 'undefined') {
         firebase.database().ref('configuracoes/statusLoja').set(status)
             .then(() => {
@@ -397,16 +385,15 @@ window.alternarLoja = function(status) {
     }
 };
 
-// Conversor da imagem enviada para link virtual (Base64) + Preview
-window.converterImagemParaBase64 = function(input) {
+window.converterImagemParaBase64 = function (input) {
     const file = input.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const base64String = e.target.result;
             document.getElementById('prod-foto').value = base64String;
             const preview = document.getElementById('preview-foto');
-            if(preview) {
+            if (preview) {
                 preview.src = base64String;
                 preview.style.display = 'block';
             }
@@ -415,8 +402,7 @@ window.converterImagemParaBase64 = function(input) {
     }
 };
 
-// Gerenciamento de Produtos no Admin (Adicionar / Editar)
-window.salvarProdutoFirebase = function() {
+window.salvarProdutoFirebase = function () {
     const id = document.getElementById('prod-id').value || firebase.database().ref('produtos').push().key;
     const nome = document.getElementById('prod-nome').value;
     const descricao = document.getElementById('prod-desc').value;
@@ -441,12 +427,12 @@ window.salvarProdutoFirebase = function() {
 
 function carregarListaAdmin() {
     const listaAdmin = document.getElementById('lista-produtos-admin');
-    if(!listaAdmin) return;
-    
+    if (!listaAdmin) return;
+
     firebase.database().ref('produtos').once('value', (snapshot) => {
         const dados = snapshot.val();
         listaAdmin.innerHTML = '';
-        if(!dados) return;
+        if (!dados) return;
 
         Object.keys(dados).forEach(id => {
             const p = dados[id];
@@ -463,7 +449,7 @@ function carregarListaAdmin() {
     });
 }
 
-window.preencherEdicao = function(id, nome, desc, foto, categoria, precoM, precoG) {
+window.preencherEdicao = function (id, nome, desc, foto, categoria, precoM, precoG) {
     document.getElementById('prod-id').value = id;
     document.getElementById('prod-nome').value = nome;
     document.getElementById('prod-desc').value = desc;
@@ -473,14 +459,14 @@ window.preencherEdicao = function(id, nome, desc, foto, categoria, precoM, preco
     document.getElementById('prod-preco-g').value = precoG;
 
     const preview = document.getElementById('preview-foto');
-    if(foto && preview) {
+    if (foto && preview) {
         preview.src = foto;
         preview.style.display = 'block';
     }
 };
 
-window.excluirProduto = function(id) {
-    if(confirm("Deseja realmente excluir este produto?")) {
+window.excluirProduto = function (id) {
+    if (confirm("Deseja realmente excluir este produto?")) {
         firebase.database().ref(`produtos/${id}`).remove().then(() => {
             alert("Produto excluído!");
             carregarListaAdmin();
@@ -497,10 +483,10 @@ function limparFormularioProduto() {
     document.getElementById('prod-preco-m').value = '';
     document.getElementById('prod-preco-g').value = '';
     const preview = document.getElementById('preview-foto');
-    if(preview) preview.style.display = 'none';
+    if (preview) preview.style.display = 'none';
 }
 
-window.mostrarCamposEntrega = function() {
+window.mostrarCamposEntrega = function () {
     const seletor = document.getElementById('retirada ou entrega');
     const nomeCampo = document.getElementById('nome-cliente');
     const enderecoCampo = document.getElementById('endereco-cliente');
@@ -510,22 +496,18 @@ window.mostrarCamposEntrega = function() {
     const exibicaoTaxa = document.getElementById('exibicao-taxa');
 
     if (seletor.value === 'retirada') {
-        // Mantém o nome visível para identificar o cliente, mas oculta o resto do endereço
         nomeCampo.style.display = 'block';
         enderecoCampo.style.display = 'none';
         numeroCampo.parentElement.style.display = 'none';
         bairroCampo.parentElement.style.display = 'none';
         pontoRefCampo.style.display = 'none';
         exibicaoTaxa.style.display = 'none';
-        
-        // Limpar valores de endereço anteriores
         enderecoCampo.value = '';
         numeroCampo.value = '';
         bairroCampo.value = '';
         pontoRefCampo.value = '';
         taxaEntregaAtual = 0;
     } else {
-        // Mostrar campos quando é ENTREGA
         nomeCampo.style.display = 'block';
         enderecoCampo.style.display = 'block';
         numeroCampo.parentElement.style.display = 'block';
