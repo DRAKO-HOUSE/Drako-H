@@ -27,13 +27,20 @@
     </header>
 
     <nav class="menu-categorias">
-        <a href="#batatas" class="active">Batatas</a>
-        <a href="#pasteis">Pastéis</a>
+        <a href="#destaques" id="link-nav-destaques" class="active">⭐ Destaques</a>
+        <a href="#batatas">Batatas</a>
         <a href="#combos">Combos</a>
         <a href="#bebidas">Bebidas</a>
     </nav>
 
     <main class="container">
+        <section id="destaques" class="secao-categoria">
+            <h2 class="categoria-titulo">⭐ DESTAQUES DA CASA</h2>
+            <div class="cardapio" id="lista-destaques">
+
+            </div>
+        </section>
+
         <section id="batatas" class="secao-categoria">
             <h2 class="categoria-titulo">SEÇÃO: BATATAS</h2>
             <div class="cardapio" id="lista-batatas">
@@ -41,12 +48,6 @@
             </div>
         </section>
 
-        <section id="pasteis" class="secao-categoria">
-            <h2 class="categoria-titulo">SEÇÃO: PASTÉIS</h2>
-            <div class="cardapio" id="lista-pasteis">
-
-            </div>
-        </section>
 
         <section id="combos" class="secao-categoria">
             <h2 class="categoria-titulo">SEÇÃO: COMBOS</h2>
@@ -92,6 +93,7 @@
                     <option value="0">Planaltino</option>
                     <option value="0">São Luiz</option>
                     <option value="0">Vicente Ferreira</option>
+                    <option value="5">Agua Nova</option>
                 </select>
             </div>
 
@@ -112,8 +114,8 @@
         </div>
 
         <div class="resumo-info">
-            <div class="textos-resumo">
-                <p>RESUMO DO PEDIDO</p>
+            <div class="textos-resumo" onclick="abrirModalCarrinho()" style="cursor: pointer;" title="Clique para ver os itens no carrinho">
+                <p>RESUMO DO PEDIDO 🛒</p>
                 <span>Itens: <span id="total-itens">0</span> | Total: R$ <span id="preco-total">0,00</span></span>
             </div>
 
@@ -192,9 +194,13 @@
                 <select id="prod-categoria"
                     style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
                     <option value="batatas">Batatas (Com Tamanhos M e G)</option>
-                    <option value="pasteis">Pastéis (Preço Único)</option>
                     <option value="combos">Combos (preco unico)</option>
                     <option value="bebidas">Bebidas (Preço Único)</option>
+                </select>
+                <select id="prod-qtd-sabores"
+                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
+                    <option value="2">Combo: Escolher 2 Sabores (Padrão)</option>
+                    <option value="1">Combo: Escolher 1 Sabor</option>
                 </select>
                 <div style="display: flex; gap: 8px; margin-bottom: 8px;">
                     <input type="number" step="0.01" id="prod-preco-m" placeholder="Preço M (ou Preço Único)"
@@ -208,6 +214,22 @@
             </div>
 
             <div id="lista-produtos-admin" style="max-height: 200px; overflow-y: auto;">
+
+            </div>
+
+            <hr style="margin: 15px 0;">
+
+            <h4>Gerenciar Adicionais (Batatas)</h4>
+            <div id="form-adicional" style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                <input type="text" id="add-nome" placeholder="Nome do Adicional (ex: Bacon)"
+                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
+                <input type="number" step="0.01" id="add-preco" placeholder="Preço (R$)"
+                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
+                <button onclick="salvarAdicionalFirebase()"
+                    style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Salvar Adicional</button>
+            </div>
+
+            <div id="lista-adicionais-admin" style="max-height: 150px; overflow-y: auto;">
 
             </div>
         </div>

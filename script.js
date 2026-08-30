@@ -3,103 +3,188 @@ document.addEventListener('DOMContentLoaded', () => {
     let precoTotalProdutos = 0.0;
     let taxaEntregaAtual = 0.0;
     const carrinho = {};
+    let listaAdicionais = {};
 
+    function monitorarAdicionais() {
+        if (typeof firebase === 'undefined') return;
+        firebase.database().ref('adicionais').on('value', (snapshot) => {
+            listaAdicionais = snapshot.val() || {};
+            carregarCardapio();
+        });
+    }
 
     function carregarCardapio() {
         if (typeof firebase === 'undefined') return;
 
         firebase.database().ref('produtos').on('value', (snapshot) => {
             const dados = snapshot.val();
+            const listaDestaques = document.getElementById('lista-destaques');
             const listaBatatas = document.getElementById('lista-batatas');
             const listaCombos = document.getElementById('lista-combos');
             const listaBebidas = document.getElementById('lista-bebidas');
-            const listaPasteis = document.getElementById('lista-pasteis');
 
+            if (listaDestaques) listaDestaques.innerHTML = '';
             if (listaBatatas) listaBatatas.innerHTML = '';
             if (listaCombos) listaCombos.innerHTML = '';
-            if (listaBebidas) listaBebidas.innerHTML = ''; // Limpa a nova seção de bebidas
-            if (listaPasteis) listaPasteis.innerHTML = '';
+            if (listaBebidas) listaBebidas.innerHTML = '';
 
             if (!dados) return;
 
+            let qtdDestaques = 0;
+
             Object.keys(dados).forEach((id) => {
                 const produto = dados[id];
-                const card = document.createElement('div');
-                card.className = 'item-produto';
 
+                if (produto.destaque) {
+                    qtdDestaques++;
+                    if (listaDestaques) {
+                        const cardDestaque = criarCardProduto(id, produto, true);
+                        listaDestaques.appendChild(cardDestaque);
+                    }
+                }
+
+                const cardCategoria = criarCardProduto(id, produto, false);
                 if (produto.categoria === 'batatas' && listaBatatas) {
-                    card.innerHTML = `
-                        <img src="${produto.foto}" alt="${produto.nome}">
-                        <h3>${produto.nome}</h3>
-                        <p>${produto.descricao || ''}</p>
-                        <div class="tamanhos-container">
-                            <label class="tamanho-opcao">
-                                <input type="radio" name="tamanho-${id}" value="M" data-preco="${produto.precoM}" checked onclick="atualizarPrecoCard(this, '${id}')"> 
-                                Tam. M: R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}
-                            </label>
-                            <label class="tamanho-opcao">
-                                <input type="radio" name="tamanho-${id}" value="G" data-preco="${produto.precoG}" onclick="atualizarPrecoCard(this, '${id}')"> 
-                                Tam. G: R$ ${parseFloat(produto.precoG).toFixed(2).replace('.', ',')}
-                            </label>
-                        </div>
-                        <span class="preco" id="preco-exibicao-${id}" style="font-weight:bold; font-size:1.1rem; margin-bottom:8px;">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
-                        <div class="seletor-quantidade">
-                            <button onclick="alterarQtd(this, -1, '${id}', '${produto.nome}')">-</button>
-                            <span class="qtd-numero" id="qtd-${id}">0</span>
-                            <button onclick="alterarQtd(this, 1, '${id}', '${produto.nome}')">+</button>
-                        </div>
-                    `;
-                    listaBatatas.appendChild(card);
+                    listaBatatas.appendChild(cardCategoria);
                 } else if (produto.categoria === 'combos' && listaCombos) {
-                    card.innerHTML = `
-                        <img src="${produto.foto}" alt="${produto.nome}">
-                        <h3>${produto.nome}</h3>
-                        <p>${produto.descricao || ''}</p>
-                        <span class="preco">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
-                        <button class="btn-add-combo" onclick='abrirModalSabores(${JSON.stringify({ id, ...produto })})' style="width:100%; padding:10px; background:#516E03; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">Escolher Sabores</button>
-                    `;
-                    card.classList.add('item-produto-combo');
-                    listaCombos.appendChild(card);
-                } else if (produto.categoria === 'pasteis' && listaPasteis) {
-                    card.innerHTML = `
-                        <img src="${produto.foto}" alt="${produto.nome}">
-                        <h3>${produto.nome}</h3>
-                        <p>${produto.descricao || ''}</p>
-                        <span class="preco" id="preco-exibicao-${id}" style="font-weight:bold; font-size:1.1rem; margin-bottom:8px;">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
-                        <div class="seletor-quantidade">
-                            <button onclick="alterarQtd(this, -1, '${id}', '${produto.nome}', 'Único', ${produto.precoM})">-</button>
-                            <span class="qtd-numero" id="qtd-${id}">0</span>
-                            <button onclick="alterarQtd(this, 1, '${id}', '${produto.nome}', 'Único', ${produto.precoM})">+</button>
-                        </div>
-                    `;
-                    listaPasteis.appendChild(card);
+                    listaCombos.appendChild(cardCategoria);
                 } else if (produto.categoria === 'bebidas' && listaBebidas) {
-                    card.innerHTML = `
-                        <img src="${produto.foto}" alt="${produto.nome}">
-                        <h3>${produto.nome}</h3>
-                        <p>${produto.descricao || ''}</p>
-                        <span class="preco" id="preco-exibicao-${id}" style="font-weight:bold; font-size:1.1rem; margin-bottom:8px;">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
-                        <div class="seletor-quantidade">
-                            <button onclick="alterarQtd(this, -1, '${id}', '${produto.nome}', 'Único', ${produto.precoM})">-</button>
-                            <span class="qtd-numero" id="qtd-${id}">0</span>
-                            <button onclick="alterarQtd(this, 1, '${id}', '${produto.nome}', 'Único', ${produto.precoM})">+</button>
-                        </div>
-                    `;
-                    listaBebidas.appendChild(card);
+                    listaBebidas.appendChild(cardCategoria);
                 }
             });
+
+            // Controle de visibilidade da seção e navegação de destaques
+            const secDestaques = document.getElementById('destaques');
+            const navDestaques = document.getElementById('link-nav-destaques');
+
+            if (secDestaques && navDestaques) {
+                if (qtdDestaques === 0) {
+                    secDestaques.style.display = 'none';
+                    navDestaques.style.display = 'none';
+                    if (navDestaques.classList.contains('active')) {
+                        navDestaques.classList.remove('active');
+                        const linkBatatas = document.querySelector('.menu-categorias a[href="#batatas"]');
+                        if (linkBatatas) linkBatatas.classList.add('active');
+                    }
+                } else {
+                    secDestaques.style.display = 'block';
+                    navDestaques.style.display = 'inline-block';
+                }
+            }
         });
     }
 
+    function criarCardProduto(id, produto, isDestaque = false) {
+        const card = document.createElement('div');
+        card.className = 'item-produto';
+        const sufixo = isDestaque ? '-destaque' : '';
+        const badge = isDestaque ? '<span class="badge-destaque">⭐ Destaque</span>' : '';
+        const qtdAtual = getQtdTotalProdutoCard(id);
+
+        if (produto.categoria === 'batatas') {
+            let adicionaisHtml = '';
+            const keysAdd = Object.keys(listaAdicionais);
+            if (keysAdd.length > 0) {
+                adicionaisHtml = `
+                    <div class="opcoes-adicionais">
+                        <span class="titulo-adicionais">Adicionais (opcional):</span>
+                        <div class="lista-adicionais-grid">
+                            ${keysAdd.map(addId => {
+                                const add = listaAdicionais[addId];
+                                return `
+                                    <label class="item-adicional">
+                                        <input type="checkbox" class="chk-adicional-${id}${sufixo}" data-id="${addId}" data-nome="${add.nome}" data-preco="${add.preco}">
+                                        <span>${add.nome} (+R$ ${parseFloat(add.preco).toFixed(2).replace('.', ',')})</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                ${badge}
+                <img src="${produto.foto}" alt="${produto.nome}">
+                <h3>${produto.nome}</h3>
+                <p>${produto.descricao || ''}</p>
+                <div class="tamanhos-container">
+                    <label class="tamanho-opcao">
+                        <input type="radio" name="tamanho-${id}${sufixo}" value="M" data-preco="${produto.precoM}" checked onclick="atualizarPrecoCard(this, '${id}${sufixo}')"> 
+                        Tam. M: R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}
+                    </label>
+                    <label class="tamanho-opcao">
+                        <input type="radio" name="tamanho-${id}${sufixo}" value="G" data-preco="${produto.precoG}" onclick="atualizarPrecoCard(this, '${id}${sufixo}')"> 
+                        Tam. G: R$ ${parseFloat(produto.precoG).toFixed(2).replace('.', ',')}
+                    </label>
+                </div>
+                ${adicionaisHtml}
+                <span class="preco" id="preco-exibicao-${id}${sufixo}" style="font-weight:bold; font-size:1.1rem; margin-bottom:8px;">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
+                <div class="seletor-quantidade">
+                    <button onclick="alterarQtd(this, -1, '${id}', '${produto.nome.replace(/'/g, "\\'")}', null, null, '${sufixo}')">-</button>
+                    <span class="qtd-numero" id="qtd-${id}${sufixo}">${qtdAtual}</span>
+                    <button onclick="alterarQtd(this, 1, '${id}', '${produto.nome.replace(/'/g, "\\'")}', null, null, '${sufixo}')">+</button>
+                </div>
+            `;
+        } else if (produto.categoria === 'combos') {
+            card.innerHTML = `
+                ${badge}
+                <img src="${produto.foto}" alt="${produto.nome}">
+                <h3>${produto.nome}</h3>
+                <p>${produto.descricao || ''}</p>
+                <span class="preco">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
+                <button class="btn-add-combo" onclick='abrirModalSabores(${JSON.stringify({ id, ...produto })})' style="width:100%; padding:10px; background:#516E03; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">Escolher Sabores</button>
+            `;
+            card.classList.add('item-produto-combo');
+        } else if (produto.categoria === 'bebidas') {
+            card.innerHTML = `
+                ${badge}
+                <img src="${produto.foto}" alt="${produto.nome}">
+                <h3>${produto.nome}</h3>
+                <p>${produto.descricao || ''}</p>
+                <span class="preco" id="preco-exibicao-${id}${sufixo}" style="font-weight:bold; font-size:1.1rem; margin-bottom:8px;">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
+                <div class="seletor-quantidade">
+                    <button onclick="alterarQtd(this, -1, '${id}', '${produto.nome.replace(/'/g, "\\'")}', 'Único', ${produto.precoM}, '${sufixo}')">-</button>
+                    <span class="qtd-numero" id="qtd-${id}${sufixo}">${qtdAtual}</span>
+                    <button onclick="alterarQtd(this, 1, '${id}', '${produto.nome.replace(/'/g, "\\'")}', 'Único', ${produto.precoM}, '${sufixo}')">+</button>
+                </div>
+            `;
+        }
+
+        return card;
+    }
+
+    function getQtdTotalProdutoCard(id) {
+        let soma = 0;
+        for (const key in carrinho) {
+            if (carrinho[key].idProduto === id) {
+                soma += carrinho[key].qtd;
+            }
+        }
+        return soma;
+    }
+
+    function atualizarExibicaoQtdCards(id) {
+        const qtd = getQtdTotalProdutoCard(id);
+        const elPadrao = document.getElementById(`qtd-${id}`);
+        const elDestaque = document.getElementById(`qtd-${id}-destaque`);
+        if (elPadrao) elPadrao.innerText = qtd;
+        if (elDestaque) elDestaque.innerText = qtd;
+    }
+
+    monitorarAdicionais();
 
     let comboAtualParaSelecao = {};
     const NUMERO_DE_SABORES_A_ESCOLHER = 2;
 
     window.abrirModalSabores = (produtoCombo) => {
         comboAtualParaSelecao = produtoCombo;
+        const maxSabores = parseInt(produtoCombo.qtdSabores) || 2;
         const modal = document.getElementById('modal-combo-sabores');
         document.getElementById('modal-combo-titulo').textContent = `Escolha os sabores para: ${produtoCombo.nome}`;
-        document.getElementById('modal-combo-descricao').textContent = `Você pode escolher ${NUMERO_DE_SABORES_A_ESCOLHER} sabores.`;
+        document.getElementById('modal-combo-descricao').textContent = maxSabores === 1 
+            ? `Você pode escolher 1 sabor.` 
+            : `Você pode escolher ${maxSabores} sabores.`;
         const opcoesContainer = document.getElementById('combo-sabores-opcoes');
         opcoesContainer.innerHTML = '';
 
@@ -125,8 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 label.querySelector('input[type="checkbox"]').onchange = (event) => {
                     const selecionados = opcoesContainer.querySelectorAll('input:checked');
-                    if (selecionados.length > NUMERO_DE_SABORES_A_ESCOLHER) {
-                        alert(`Você só pode escolher ${NUMERO_DE_SABORES_A_ESCOLHER} sabores.`);
+                    if (selecionados.length > maxSabores) {
+                        alert(maxSabores === 1 ? `Você só pode escolher 1 sabor.` : `Você só pode escolher ${maxSabores} sabores.`);
                         event.target.checked = false;
                     }
                 };
@@ -144,68 +229,99 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function adicionarComboComSaboresAoCarrinho() {
         const selecionados = document.querySelectorAll('#combo-sabores-opcoes input:checked');
+        const maxSabores = parseInt(comboAtualParaSelecao.qtdSabores) || 2;
 
-        if (selecionados.length !== NUMERO_DE_SABORES_A_ESCOLHER) {
-            alert(`Por favor, escolha exatamente ${NUMERO_DE_SABORES_A_ESCOLHER} sabores.`);
+        if (selecionados.length !== maxSabores) {
+            alert(maxSabores === 1 ? `Por favor, escolha 1 sabor.` : `Por favor, escolha exatamente ${maxSabores} sabores.`);
             return;
         }
 
         const saboresEscolhidos = Array.from(selecionados).map(cb => cb.value);
         const nomeCompleto = `${comboAtualParaSelecao.nome} (${saboresEscolhidos.join(', ')})`;
-
         const chaveCarrinho = `combo-${comboAtualParaSelecao.id}-${Date.now()}`;
 
         carrinho[chaveCarrinho] = {
+            idProduto: comboAtualParaSelecao.id,
             qtd: 1,
             nome: nomeCompleto,
-            preco: comboAtualParaSelecao.precoM
+            preco: parseFloat(comboAtualParaSelecao.precoM),
+            adicionais: []
         };
 
         atualizarResumo();
         fecharModalSabores();
     }
 
-    carregarCardapio();
-
-    window.atualizarPrecoCard = (radio, id) => {
+    window.atualizarPrecoCard = (radio, idSufixo) => {
         const preco = parseFloat(radio.getAttribute('data-preco'));
-        document.getElementById(`preco-exibicao-${id}`).innerText = `R$ ${preco.toFixed(2).replace('.', ',')}`;
+        const display = document.getElementById(`preco-exibicao-${idSufixo}`);
+        if (display) display.innerText = `R$ ${preco.toFixed(2).replace('.', ',')}`;
     };
 
-    window.alterarQtd = (botao, mudanca, id, nomeBase, tamanhoUnico = null, precoUnico = null) => {
+    window.alterarQtd = (botao, mudanca, id, nomeBase, tamanhoUnico = null, precoUnico = null, sufixo = '') => {
         let tamanho = tamanhoUnico;
-        let preco = precoUnico;
+        let precoBase = precoUnico;
+        let adicionaisSelecionados = [];
 
         if (!tamanhoUnico) {
-            const radioSelecionado = document.querySelector(`input[name="tamanho-${id}"]:checked`);
+            const radioSelecionado = document.querySelector(`input[name="tamanho-${id}${sufixo}"]:checked`);
             if (!radioSelecionado) return;
             tamanho = radioSelecionado.value;
-            preco = parseFloat(radioSelecionado.getAttribute('data-preco'));
+            precoBase = parseFloat(radioSelecionado.getAttribute('data-preco'));
+
+            const checkboxesAdicionais = document.querySelectorAll(`.chk-adicional-${id}${sufixo}:checked`);
+            adicionaisSelecionados = Array.from(checkboxesAdicionais).map(cb => ({
+                id: cb.getAttribute('data-id'),
+                nome: cb.getAttribute('data-nome'),
+                preco: parseFloat(cb.getAttribute('data-preco'))
+            }));
         }
 
-        const chaveCarrinho = `${id}-${tamanho}`;
-        const qtdElement = document.getElementById(`qtd-${id}`);
+        const somaAdicionais = adicionaisSelecionados.reduce((acc, a) => acc + a.preco, 0);
+        const precoTotalItem = precoBase + somaAdicionais;
+        const chaveAdicionais = adicionaisSelecionados.map(a => a.id).sort().join('_');
+        const chaveCarrinho = tamanhoUnico
+            ? `${id}-unico`
+            : (chaveAdicionais ? `${id}-${tamanho}-${chaveAdicionais}` : `${id}-${tamanho}`);
 
-        if (!carrinho[chaveCarrinho]) {
-            carrinho[chaveCarrinho] = { qtd: 0, nome: `${nomeBase} (${tamanho})`, preco: preco };
-        }
-
-        let qtdAtual = carrinho[chaveCarrinho].qtd + mudanca;
-
-        if (qtdAtual >= 0) {
-            carrinho[chaveCarrinho].qtd = qtdAtual;
-            if (qtdElement) qtdElement.innerText = qtdAtual;
-
-            if (qtdAtual === 0) {
-                delete carrinho[chaveCarrinho];
+        if (mudanca > 0) {
+            if (!carrinho[chaveCarrinho]) {
+                carrinho[chaveCarrinho] = {
+                    idProduto: id,
+                    qtd: 0,
+                    nome: tamanhoUnico ? nomeBase : `${nomeBase} (${tamanho})`,
+                    precoBase: precoBase,
+                    adicionais: adicionaisSelecionados,
+                    preco: precoTotalItem
+                };
             }
-            atualizarResumo();
+            carrinho[chaveCarrinho].qtd += mudanca;
+        } else if (mudanca < 0) {
+            if (carrinho[chaveCarrinho]) {
+                carrinho[chaveCarrinho].qtd += mudanca;
+                if (carrinho[chaveCarrinho].qtd <= 0) {
+                    delete carrinho[chaveCarrinho];
+                }
+            } else {
+                for (const key in carrinho) {
+                    if (carrinho[key].idProduto === id) {
+                        carrinho[key].qtd += mudanca;
+                        if (carrinho[key].qtd <= 0) {
+                            delete carrinho[key];
+                        }
+                        break;
+                    }
+                }
+            }
         }
+
+        atualizarExibicaoQtdCards(id);
+        atualizarResumo();
     };
 
     function atualizarResumo() {
         totalItens = 0;
-        precoTotalProdutos = 0;
+        precoTotalProdutos = 0.0;
         for (const chave in carrinho) {
             totalItens += carrinho[chave].qtd;
             precoTotalProdutos += carrinho[chave].qtd * carrinho[chave].preco;
@@ -257,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const tipoPedido = document.getElementById('retirada ou entrega').value; // 'entrega' ou 'retirada'
+        const tipoPedido = document.getElementById('retirada ou entrega').value;
         const nome = document.getElementById('nome-cliente').value.trim();
         const pagamento = document.getElementById('pagamento').value;
 
@@ -295,7 +411,13 @@ document.addEventListener('DOMContentLoaded', () => {
         mensagem += `💳 *Pagamento:* ${pagamento}\n━━━━━━━━━━━━━━━━━━━━\n\n`;
 
         for (const chave in carrinho) {
-            mensagem += `✅ ${carrinho[chave].qtd}x ${carrinho[chave].nome}\n`;
+            const item = carrinho[chave];
+            const subtotalItem = item.qtd * item.preco;
+            mensagem += `✅ ${item.qtd}x ${item.nome} - R$ ${subtotalItem.toFixed(2).replace('.', ',')}\n`;
+            if (item.adicionais && item.adicionais.length > 0) {
+                const addList = item.adicionais.map(a => `${a.nome} (+R$ ${parseFloat(a.preco).toFixed(2).replace('.', ',')})`).join(', ');
+                mensagem += `   Adicionais: ${addList}\n`;
+            }
         }
 
         if (tipoPedido === 'entrega') {
@@ -314,6 +436,47 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.innerText = "Finalizar via WhatsApp";
         btn.style.backgroundColor = "";
         document.getElementById('btn-voltar').style.display = "none";
+    };
+
+    window.abrirModalCarrinho = () => {
+        const modal = document.getElementById('modal-carrinho');
+        const container = document.getElementById('lista-itens-carrinho');
+        if (!modal || !container) return;
+
+        container.innerHTML = '';
+        const keys = Object.keys(carrinho);
+        if (keys.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:#666; padding: 20px 0;">Seu carrinho está vazio.</p>';
+        } else {
+            keys.forEach(chave => {
+                const item = carrinho[chave];
+                const div = document.createElement('div');
+                div.style.cssText = 'padding: 10px 0; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 4px;';
+
+                let adicionaisTexto = '';
+                if (item.adicionais && item.adicionais.length > 0) {
+                    const addList = item.adicionais.map(a => `${a.nome} (+R$ ${parseFloat(a.preco).toFixed(2).replace('.', ',')})`).join(', ');
+                    adicionaisTexto = `<span class="item-carrinho-adicionais"><strong>+ Adicionais:</strong> ${addList}</span>`;
+                }
+
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${item.qtd}x ${item.nome}</strong>
+                            ${adicionaisTexto}
+                        </div>
+                        <span style="font-weight: bold; color: #2E5902;">R$ ${(item.qtd * item.preco).toFixed(2).replace('.', ',')}</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        modal.style.display = 'flex';
+    };
+
+    window.fecharModalCarrinho = () => {
+        const modal = document.getElementById('modal-carrinho');
+        if (modal) modal.style.display = 'none';
     };
 
     const navLinks = document.querySelectorAll('.menu-categorias a');
@@ -371,6 +534,7 @@ window.verificarSenha = function () {
         document.getElementById('admin-login').style.display = 'none';
         document.getElementById('admin-controles').style.display = 'block';
         carregarListaAdmin();
+        carregarListaAdicionaisAdmin();
     } else {
         alert("Senha incorreta!");
     }
@@ -384,6 +548,64 @@ window.alternarLoja = function (status) {
             });
     }
 };
+
+window.alternarDestaqueProduto = function (id, status) {
+    if (typeof firebase === 'undefined') return;
+    firebase.database().ref(`produtos/${id}/destaque`).set(status).then(() => {
+        carregarListaAdmin();
+    });
+};
+
+window.salvarAdicionalFirebase = function () {
+    const nome = document.getElementById('add-nome').value.trim();
+    const preco = parseFloat(document.getElementById('add-preco').value) || 0;
+
+    if (!nome || preco <= 0) {
+        alert("Preencha o nome e um preço válido para o adicional!");
+        return;
+    }
+
+    const id = firebase.database().ref('adicionais').push().key;
+    firebase.database().ref(`adicionais/${id}`).set({ nome, preco }).then(() => {
+        alert("Adicional salvo com sucesso!");
+        document.getElementById('add-nome').value = '';
+        document.getElementById('add-preco').value = '';
+        carregarListaAdicionaisAdmin();
+    });
+};
+
+window.excluirAdicionalFirebase = function (id) {
+    if (confirm("Deseja realmente excluir este adicional?")) {
+        firebase.database().ref(`adicionais/${id}`).remove().then(() => {
+            alert("Adicional excluído!");
+            carregarListaAdicionaisAdmin();
+        });
+    }
+};
+
+function carregarListaAdicionaisAdmin() {
+    const container = document.getElementById('lista-adicionais-admin');
+    if (!container) return;
+
+    firebase.database().ref('adicionais').once('value', (snapshot) => {
+        const dados = snapshot.val();
+        container.innerHTML = '';
+        if (!dados) {
+            container.innerHTML = '<p style="font-size:0.85rem; color:#666;">Nenhum adicional cadastrado.</p>';
+            return;
+        }
+
+        Object.keys(dados).forEach(id => {
+            const add = dados[id];
+            container.innerHTML += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #ddd; font-size:0.9rem;">
+                    <span><strong>${add.nome}</strong> (+R$ ${parseFloat(add.preco).toFixed(2).replace('.', ',')})</span>
+                    <button onclick="excluirAdicionalFirebase('${id}')" style="background:#e74c3c; color:white; border:none; padding:3px 6px; border-radius:4px; cursor:pointer;">Excluir</button>
+                </div>
+            `;
+        });
+    });
+}
 
 window.converterImagemParaBase64 = function (input) {
     const file = input.files[0];
@@ -408,6 +630,7 @@ window.salvarProdutoFirebase = function () {
     const descricao = document.getElementById('prod-desc').value;
     const foto = document.getElementById('prod-foto').value;
     const categoria = document.getElementById('prod-categoria').value;
+    const qtdSabores = parseInt(document.getElementById('prod-qtd-sabores').value) || 2;
     const precoM = parseFloat(document.getElementById('prod-preco-m').value) || 0;
     const precoG = parseFloat(document.getElementById('prod-preco-g').value) || precoM;
 
@@ -416,9 +639,9 @@ window.salvarProdutoFirebase = function () {
         return;
     }
 
-    const produtoData = { nome, descricao, foto, categoria, precoM, precoG };
+    const produtoData = { nome, descricao, foto, categoria, qtdSabores, precoM, precoG };
 
-    firebase.database().ref(`produtos/${id}`).set(produtoData).then(() => {
+    firebase.database().ref(`produtos/${id}`).update(produtoData).then(() => {
         alert("Produto salvo com sucesso!");
         limparFormularioProduto();
         carregarListaAdmin();
@@ -436,11 +659,16 @@ function carregarListaAdmin() {
 
         Object.keys(dados).forEach(id => {
             const p = dados[id];
+            const btnDestaque = p.destaque
+                ? `<button onclick="alternarDestaqueProduto('${id}', false)" style="background:#7f8c8d; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">❌ Tirar Destaque</button>`
+                : `<button onclick="alternarDestaqueProduto('${id}', true)" style="background:#f1c40f; color:black; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">⭐ Destacar</button>`;
+
             listaAdmin.innerHTML += `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #ddd;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #ddd; gap: 6px; flex-wrap: wrap;">
                     <span><strong>${p.nome}</strong> (${p.categoria})</span>
-                    <div>
-                        <button onclick="preencherEdicao('${id}', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.foto}', '${p.categoria}', ${p.precoM}, ${p.precoG})" style="background:#f39c12; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Editar</button>
+                    <div style="display: flex; gap: 4px;">
+                        ${btnDestaque}
+                        <button onclick="preencherEdicao('${id}', '${p.nome.replace(/'/g, "\\'")}', '${(p.descricao || '').replace(/'/g, "\\'")}', '${p.foto}', '${p.categoria}', ${p.precoM}, ${p.precoG}, ${p.qtdSabores || 2})" style="background:#f39c12; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Editar</button>
                         <button onclick="excluirProduto('${id}')" style="background:#e74c3c; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Excluir</button>
                     </div>
                 </div>
@@ -449,12 +677,13 @@ function carregarListaAdmin() {
     });
 }
 
-window.preencherEdicao = function (id, nome, desc, foto, categoria, precoM, precoG) {
+window.preencherEdicao = function (id, nome, desc, foto, categoria, precoM, precoG, qtdSabores = 2) {
     document.getElementById('prod-id').value = id;
     document.getElementById('prod-nome').value = nome;
     document.getElementById('prod-desc').value = desc;
     document.getElementById('prod-foto').value = foto;
     document.getElementById('prod-categoria').value = categoria;
+    document.getElementById('prod-qtd-sabores').value = qtdSabores || 2;
     document.getElementById('prod-preco-m').value = precoM;
     document.getElementById('prod-preco-g').value = precoG;
 
@@ -480,6 +709,7 @@ function limparFormularioProduto() {
     document.getElementById('prod-desc').value = '';
     document.getElementById('prod-foto').value = '';
     document.getElementById('prod-file-input').value = '';
+    document.getElementById('prod-qtd-sabores').value = '2';
     document.getElementById('prod-preco-m').value = '';
     document.getElementById('prod-preco-g').value = '';
     const preview = document.getElementById('preview-foto');
