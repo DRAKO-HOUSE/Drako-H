@@ -81,7 +81,7 @@
                 <select id="bairro" onchange="calcularFrete()" class="form-control"
                     style="width: 100%; padding: 10px; border-radius: 8px;">
                     <option value="" disabled selected>Clique para escolher o bairro...</option>
-                    <option value="0">Novo Oeste</option>
+                    <option value="5">Agua Nova</option>
                     <option value="0">Centro</option>
                     <option value="0">Estação da Luiz</option>
                     <option value="0">Jardim Araújo</option>
@@ -89,11 +89,12 @@
                     <option value="0">José Mendes</option>
                     <option value="0">Nova Avenida</option>
                     <option value="0">Nova Morada</option>
+                    <option value="0">Novo Oeste</option>
                     <option value="0">Oliveira</option>
                     <option value="0">Planaltino</option>
+                    <option value="0">Sacramento</option>
                     <option value="0">São Luiz</option>
                     <option value="0">Vicente Ferreira</option>
-                    <option value="5">Agua Nova</option>
                 </select>
             </div>
 
@@ -114,7 +115,8 @@
         </div>
 
         <div class="resumo-info">
-            <div class="textos-resumo" onclick="abrirModalCarrinho()" style="cursor: pointer;" title="Clique para ver os itens no carrinho">
+            <div class="textos-resumo" onclick="abrirModalCarrinho()" style="cursor: pointer;"
+                title="Clique para ver os itens no carrinho">
                 <p>RESUMO DO PEDIDO 🛒</p>
                 <span>Itens: <span id="total-itens">0</span> | Total: R$ <span id="preco-total">0,00</span></span>
             </div>
@@ -220,13 +222,15 @@
             <hr style="margin: 15px 0;">
 
             <h4>Gerenciar Adicionais (Batatas)</h4>
-            <div id="form-adicional" style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+            <div id="form-adicional"
+                style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
                 <input type="text" id="add-nome" placeholder="Nome do Adicional (ex: Bacon)"
                     style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
                 <input type="number" step="0.01" id="add-preco" placeholder="Preço (R$)"
                     style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
                 <button onclick="salvarAdicionalFirebase()"
-                    style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Salvar Adicional</button>
+                    style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Salvar
+                    Adicional</button>
             </div>
 
             <div id="lista-adicionais-admin" style="max-height: 150px; overflow-y: auto;">
