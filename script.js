@@ -376,6 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tipoPedido = document.getElementById('retirada ou entrega').value;
         const nome = document.getElementById('nome-cliente').value.trim();
         const pagamento = document.getElementById('pagamento').value;
+        const pontoReferencia = document.getElementById('ponto-referencia')?.value.trim() || '';
 
         if (!nome) {
             alert("Preencha o seu nome!");
@@ -406,6 +407,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (tipoPedido === 'entrega') {
             mensagem += `📍 *Endereço:* ${rua}, Nº ${numero}\n🏘️ *Bairro:* ${bairroNome}\n`;
+            if (pontoReferencia) {
+                mensagem += `📌 *Ponto de Referência:* ${pontoReferencia}\n`;
+            }
         }
 
         mensagem += `💳 *Pagamento:* ${pagamento}\n━━━━━━━━━━━━━━━━━━━━\n\n`;
