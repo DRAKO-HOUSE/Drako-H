@@ -19,7 +19,7 @@
     </div>
 
     <header class="main-header">
-        <img src="./assets/logo.jpeg" alt="Drakohouse Logo" class="logo">
+        <img src="./assets/logo.jpeg" alt="Drakohouse Logo" class="logo" id="logo-empresa">
         <div class="header-text">
             <h1>DRAKO HOUSE</h1>
             <p>Sua dose diária de felicidade.</p>
@@ -174,6 +174,82 @@
 
             <hr style="margin: 15px 0;">
 
+            <h4>Identidade visual</h4>
+            <div id="form-identidade-visual" style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                <label style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Logo da empresa:</label>
+                <input type="file" id="logo-file-input" accept="image/*" onchange="converterLogoParaBase64(this)"
+                    style="width:100%; padding:6px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px; background:white;">
+                <img id="preview-logo" src="./assets/logo.jpeg" alt="Prévia do logo"
+                    style="width:70px; height:70px; display:block; margin: 0 0 10px; border-radius:50%; object-fit:cover; border:1px solid #ddd;">
+                <input type="hidden" id="logo-empresa-base64">
+                <label style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Imagem de fundo do cabeçalho:</label>
+                <input type="file" id="fundo-cabecalho-file-input" accept="image/*" onchange="converterFundoCabecalhoParaBase64(this)"
+                    style="width:100%; padding:6px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px; background:white;">
+                <img id="preview-fundo-cabecalho" src="" alt="Prévia do fundo do cabeçalho"
+                    style="width:100%; height:70px; display:none; margin: 0 0 10px; border-radius:4px; object-fit:cover; border:1px solid #ddd;">
+                <input type="hidden" id="fundo-cabecalho-base64">
+                <label style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Título do cabeçalho:</label>
+                <input type="text" id="titulo-cabecalho" value="DRAKO HOUSE" maxlength="80"
+                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
+                <label style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Subtítulo do cabeçalho:</label>
+                <input type="text" id="subtitulo-cabecalho" value="Sua dose diária de felicidade." maxlength="120"
+                    style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px;">
+                <div class="controles-cores-identidade">
+                    <label class="controle-cor">Cor principal
+                        <span class="campo-cor">
+                            <input type="color" id="cor-principal" value="#516e03" oninput="atualizarCodigoCor('cor-principal', this.value)">
+                            <input type="text" id="codigo-cor-principal" value="#516e03" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da cor principal" onchange="aplicarCodigoCor('cor-principal', this.value)">
+                        </span>
+                    </label>
+                    <label class="controle-cor">Cor escura
+                        <span class="campo-cor">
+                            <input type="color" id="cor-escura" value="#2e5902" oninput="atualizarCodigoCor('cor-escura', this.value)">
+                            <input type="text" id="codigo-cor-escura" value="#2e5902" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da cor escura" onchange="aplicarCodigoCor('cor-escura', this.value)">
+                        </span>
+                    </label>
+                    <label class="controle-cor">Cor de destaque
+                        <span class="campo-cor">
+                            <input type="color" id="cor-destaque" value="#f2f2f2" oninput="atualizarCodigoCor('cor-destaque', this.value)">
+                            <input type="text" id="codigo-cor-destaque" value="#f2f2f2" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da cor de destaque" onchange="aplicarCodigoCor('cor-destaque', this.value)">
+                        </span>
+                    </label>
+                    <label class="controle-cor">Fundo do site
+                        <span class="campo-cor">
+                            <input type="color" id="cor-fundo" value="#f2f2f2" oninput="atualizarCodigoCor('cor-fundo', this.value)">
+                            <input type="text" id="codigo-cor-fundo" value="#f2f2f2" maxlength="7" spellcheck="false" aria-label="Código hexadecimal do fundo do site" onchange="aplicarCodigoCor('cor-fundo', this.value)">
+                        </span>
+                    </label>
+                    <label class="controle-cor">Fonte do título
+                        <span class="campo-cor">
+                            <input type="color" id="cor-fonte-titulo" value="#f6f4f3" oninput="atualizarCodigoCor('cor-fonte-titulo', this.value)">
+                            <input type="text" id="codigo-cor-fonte-titulo" value="#f6f4f3" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da fonte do título" onchange="aplicarCodigoCor('cor-fonte-titulo', this.value)">
+                        </span>
+                    </label>
+                    <label class="controle-cor">Fonte do subtítulo
+                        <span class="campo-cor">
+                            <input type="color" id="cor-fonte-subtitulo" value="#f6f4f3" oninput="atualizarCodigoCor('cor-fonte-subtitulo', this.value)">
+                            <input type="text" id="codigo-cor-fonte-subtitulo" value="#f6f4f3" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da fonte do subtítulo" onchange="aplicarCodigoCor('cor-fonte-subtitulo', this.value)">
+                        </span>
+                    </label>
+                    <label class="controle-cor">Cor das categorias
+                        <span class="campo-cor">
+                            <input type="color" id="cor-categorias" value="#516e03" oninput="atualizarCodigoCor('cor-categorias', this.value)">
+                            <input type="text" id="codigo-cor-categorias" value="#516e03" maxlength="7" spellcheck="false" aria-label="Código hexadecimal das categorias" onchange="aplicarCodigoCor('cor-categorias', this.value)">
+                        </span>
+                    </label>
+                    <label class="controle-cor">Fundo da categoria ativa
+                        <span class="campo-cor">
+                            <input type="color" id="cor-categoria-ativa" value="#516e03" oninput="atualizarCodigoCor('cor-categoria-ativa', this.value)">
+                            <input type="text" id="codigo-cor-categoria-ativa" value="#516e03" maxlength="7" spellcheck="false" aria-label="Código hexadecimal do fundo da categoria ativa" onchange="aplicarCodigoCor('cor-categoria-ativa', this.value)">
+                        </span>
+                    </label>
+                </div>
+                <button onclick="salvarIdentidadeVisual()"
+                    style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Salvar identidade visual</button>
+            </div>
+
+            <hr style="margin: 15px 0;">
+
             <h4>Gerenciar Produtos</h4>
             <div id="form-produto" style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
                 <input type="hidden" id="prod-id">
@@ -254,7 +330,7 @@
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button id="btn-confirmar-combo"
-                    style="flex: 1; padding: 12px; background: #2E5902; color: white; border: none; border-radius: 8px; cursor: pointer;">Confirmar
+                    style="flex: 1; padding: 12px; background: var(--vermelho-escuro); color: white; border: none; border-radius: 8px; cursor: pointer;">Confirmar
                     Seleção</button>
                 <button onclick="fecharModalSabores()"
                     style="flex: 1; padding: 12px; background: #777; color: white; border: none; border-radius: 8px; cursor: pointer;">Cancelar</button>

@@ -5,6 +5,10 @@
   --verde-whatsapp: #25d366;
   --cinza-fundo: #f2f2f2;
   --branco: #f6f4f3;
+  --fonte-titulo-cabecalho: #f6f4f3;
+  --fonte-subtitulo-cabecalho: #f6f4f3;
+  --cor-categorias: #516e03;
+  --cor-categoria-ativa: #516e03;
   --texto-escuro: #000000;
 }
 
@@ -30,13 +34,67 @@ body {
 }
 
 .main-header {
-  background-color: #2e5902;
-  color: var(--branco);
+  background-color: var(--vermelho-escuro);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   text-align: center;
   padding: 10px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.main-header h1 {
+  color: var(--fonte-titulo-cabecalho);
+}
+
+.main-header .header-text p {
+  color: var(--fonte-subtitulo-cabecalho);
+}
+
+.controles-cores-identidade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.controle-cor {
+  display: block;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.campo-cor {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-top: 3px;
+}
+
+.campo-cor input[type="color"] {
+  width: 42px;
+  height: 36px;
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.campo-cor input[type="text"] {
+  min-width: 0;
+  width: 100%;
+  height: 36px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+  font-family: monospace;
+  text-transform: uppercase;
 }
 
 .logo {
@@ -64,8 +122,8 @@ body {
 
 .menu-categorias a {
   text-decoration: none;
-  color: var(--vermelho-principal);
-  border: 1.5px solid var(--vermelho-principal);
+  color: var(--cor-categorias);
+  border: 1.5px solid var(--cor-categorias);
   padding: 8px 22px;
   border-radius: 25px;
   font-weight: 700;
@@ -76,7 +134,7 @@ body {
 }
 
 .menu-categorias a.active {
-  background-color: var(--vermelho-principal) !important;
+  background-color: var(--cor-categoria-ativa) !important;
   color: #ffffff !important;
 }
 
@@ -101,7 +159,7 @@ body {
 
 .categoria-titulo {
   font-size: 1.2rem;
-  color: var(--vermelho-principal);
+  color: var(--cor-categorias);
   text-transform: uppercase;
   margin: 30px 0 15px;
   display: flex;
@@ -305,7 +363,7 @@ body {
 
 #overlay-fechado h1 {
   font-size: 2.5rem;
-  color: #516e03;
+  color: var(--vermelho-principal);
   margin-bottom: 10px;
 }
 
@@ -322,7 +380,7 @@ body {
 .titulo-adicionais {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #516e03;
+  color: var(--vermelho-principal);
   margin-bottom: 6px;
   display: block;
 }

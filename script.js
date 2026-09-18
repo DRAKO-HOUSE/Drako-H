@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3>${produto.nome}</h3>
                 <p>${produto.descricao || ''}</p>
                 <span class="preco">R$ ${parseFloat(produto.precoM).toFixed(2).replace('.', ',')}</span>
-                <button class="btn-add-combo" onclick='abrirModalSabores(${JSON.stringify({ id, ...produto })})' style="width:100%; padding:10px; background:#516E03; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">Escolher Sabores</button>
+                <button class="btn-add-combo" onclick='abrirModalSabores(${JSON.stringify({ id, ...produto })})' style="width:100%; padding:10px; background:var(--vermelho-principal); color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">Escolher Sabores</button>
             `;
             card.classList.add('item-produto-combo');
         } else if (produto.categoria === 'bebidas') {
@@ -524,6 +524,74 @@ function monitorarStatusLoja() {
 }
 monitorarStatusLoja();
 
+const IDENTIDADE_VISUAL_PADRAO = {
+    logo: './assets/logo.jpeg',
+    corPrincipal: '#516e03',
+    corEscura: '#2e5902',
+    corDestaque: '#f2f2f2',
+    corFundo: '#f2f2f2',
+    corFonteTitulo: '#f6f4f3',
+    corFonteSubtitulo: '#f6f4f3',
+    corCategorias: '#516e03',
+    corCategoriaAtiva: '#516e03',
+    fundoCabecalho: '',
+    tituloCabecalho: 'DRAKO HOUSE',
+    subtituloCabecalho: 'Sua dose diária de felicidade.'
+};
+
+function aplicarIdentidadeVisual(identidade = {}) {
+    const configuracao = { ...IDENTIDADE_VISUAL_PADRAO, ...identidade };
+    const raiz = document.documentElement;
+    raiz.style.setProperty('--vermelho-principal', configuracao.corPrincipal);
+    raiz.style.setProperty('--vermelho-escuro', configuracao.corEscura);
+    raiz.style.setProperty('--laranja-detalhes', configuracao.corDestaque);
+    raiz.style.setProperty('--cinza-fundo', configuracao.corFundo);
+    raiz.style.setProperty('--fonte-titulo-cabecalho', configuracao.corFonteTitulo);
+    raiz.style.setProperty('--fonte-subtitulo-cabecalho', configuracao.corFonteSubtitulo);
+    raiz.style.setProperty('--cor-categorias', configuracao.corCategorias);
+    raiz.style.setProperty('--cor-categoria-ativa', configuracao.corCategoriaAtiva);
+
+    const cabecalho = document.querySelector('.main-header');
+    if (cabecalho) cabecalho.style.backgroundImage = configuracao.fundoCabecalho ? `url("${configuracao.fundoCabecalho}")` : 'none';
+
+    const tituloCabecalho = document.querySelector('.main-header h1');
+    const subtituloCabecalho = document.querySelector('.main-header .header-text p');
+    if (tituloCabecalho) tituloCabecalho.textContent = configuracao.tituloCabecalho;
+    if (subtituloCabecalho) subtituloCabecalho.textContent = configuracao.subtituloCabecalho;
+
+    document.querySelectorAll('.logo').forEach(logo => {
+        logo.src = configuracao.logo;
+    });
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon) favicon.href = configuracao.logo;
+}
+
+function monitorarIdentidadeVisual() {
+    aplicarIdentidadeVisual();
+    if (typeof firebase === 'undefined') return;
+    firebase.database().ref('configuracoes/visual').on('value', snapshot => {
+        aplicarIdentidadeVisual(snapshot.val() || {});
+    });
+}
+
+monitorarIdentidadeVisual();
+
+window.atualizarCodigoCor = function (idCampo, valor) {
+    const codigo = document.getElementById(`codigo-${idCampo}`);
+    if (codigo) codigo.value = valor.toUpperCase();
+};
+
+window.aplicarCodigoCor = function (idCampo, valor) {
+    const valorNormalizado = valor.trim().toLowerCase();
+    if (!/^#[0-9a-f]{6}$/i.test(valorNormalizado)) {
+        atualizarCodigoCor(idCampo, document.getElementById(idCampo).value);
+        return;
+    }
+
+    document.getElementById(idCampo).value = valorNormalizado;
+    atualizarCodigoCor(idCampo, valorNormalizado);
+};
+
 const SENHA_CORRETA = "1234";
 document.addEventListener('keydown', (event) => {
     if (event.altKey && (event.key === 'a' || event.key === 'A')) {
@@ -539,6 +607,7 @@ window.verificarSenha = function () {
         document.getElementById('admin-controles').style.display = 'block';
         carregarListaAdmin();
         carregarListaAdicionaisAdmin();
+        carregarIdentidadeVisualAdmin();
     } else {
         alert("Senha incorreta!");
     }
@@ -552,6 +621,103 @@ window.alternarLoja = function (status) {
             });
     }
 };
+
+window.converterLogoParaBase64 = function (input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        const logo = event.target.result;
+        document.getElementById('logo-empresa-base64').value = logo;
+        const preview = document.getElementById('preview-logo');
+        if (preview) preview.src = logo;
+    };
+    reader.readAsDataURL(file);
+};
+
+window.converterFundoCabecalhoParaBase64 = function (input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        const imagem = event.target.result;
+        document.getElementById('fundo-cabecalho-base64').value = imagem;
+        const preview = document.getElementById('preview-fundo-cabecalho');
+        if (preview) {
+            preview.src = imagem;
+            preview.style.display = 'block';
+        }
+    };
+    reader.readAsDataURL(file);
+};
+
+window.salvarIdentidadeVisual = function () {
+    if (typeof firebase === 'undefined') return;
+
+    const identidade = {
+        logo: document.getElementById('logo-empresa-base64').value || IDENTIDADE_VISUAL_PADRAO.logo,
+        corPrincipal: document.getElementById('cor-principal').value,
+        corEscura: document.getElementById('cor-escura').value,
+        corDestaque: document.getElementById('cor-destaque').value,
+        corFundo: document.getElementById('cor-fundo').value,
+        corFonteTitulo: document.getElementById('cor-fonte-titulo').value,
+        corFonteSubtitulo: document.getElementById('cor-fonte-subtitulo').value,
+        corCategorias: document.getElementById('cor-categorias').value,
+        corCategoriaAtiva: document.getElementById('cor-categoria-ativa').value,
+        fundoCabecalho: document.getElementById('fundo-cabecalho-base64').value || IDENTIDADE_VISUAL_PADRAO.fundoCabecalho,
+        tituloCabecalho: document.getElementById('titulo-cabecalho').value.trim() || IDENTIDADE_VISUAL_PADRAO.tituloCabecalho,
+        subtituloCabecalho: document.getElementById('subtitulo-cabecalho').value.trim() || IDENTIDADE_VISUAL_PADRAO.subtituloCabecalho
+    };
+
+    firebase.database().ref('configuracoes/visual').set(identidade).then(() => {
+        aplicarIdentidadeVisual(identidade);
+        document.getElementById('logo-empresa-base64').value = identidade.logo;
+        document.getElementById('fundo-cabecalho-base64').value = identidade.fundoCabecalho;
+        document.getElementById('titulo-cabecalho').value = identidade.tituloCabecalho;
+        document.getElementById('subtitulo-cabecalho').value = identidade.subtituloCabecalho;
+        const previewFundoCabecalho = document.getElementById('preview-fundo-cabecalho');
+        if (previewFundoCabecalho && identidade.fundoCabecalho) {
+            previewFundoCabecalho.src = identidade.fundoCabecalho;
+            previewFundoCabecalho.style.display = 'block';
+        }
+        alert('Identidade visual salva com sucesso!');
+    });
+};
+
+function carregarIdentidadeVisualAdmin() {
+    if (typeof firebase === 'undefined') return;
+    firebase.database().ref('configuracoes/visual').once('value', snapshot => {
+        const identidade = { ...IDENTIDADE_VISUAL_PADRAO, ...(snapshot.val() || {}) };
+        document.getElementById('logo-empresa-base64').value = identidade.logo;
+        document.getElementById('preview-logo').src = identidade.logo;
+        document.getElementById('fundo-cabecalho-base64').value = identidade.fundoCabecalho;
+        document.getElementById('titulo-cabecalho').value = identidade.tituloCabecalho;
+        document.getElementById('subtitulo-cabecalho').value = identidade.subtituloCabecalho;
+        const previewFundoCabecalho = document.getElementById('preview-fundo-cabecalho');
+        if (previewFundoCabecalho && identidade.fundoCabecalho) {
+            previewFundoCabecalho.src = identidade.fundoCabecalho;
+            previewFundoCabecalho.style.display = 'block';
+        }
+        document.getElementById('cor-principal').value = identidade.corPrincipal;
+        document.getElementById('cor-escura').value = identidade.corEscura;
+        document.getElementById('cor-destaque').value = identidade.corDestaque;
+        document.getElementById('cor-fundo').value = identidade.corFundo;
+        document.getElementById('cor-fonte-titulo').value = identidade.corFonteTitulo;
+        document.getElementById('cor-fonte-subtitulo').value = identidade.corFonteSubtitulo;
+        document.getElementById('cor-categorias').value = identidade.corCategorias;
+        document.getElementById('cor-categoria-ativa').value = identidade.corCategoriaAtiva;
+        atualizarCodigoCor('cor-principal', identidade.corPrincipal);
+        atualizarCodigoCor('cor-escura', identidade.corEscura);
+        atualizarCodigoCor('cor-destaque', identidade.corDestaque);
+        atualizarCodigoCor('cor-fundo', identidade.corFundo);
+        atualizarCodigoCor('cor-fonte-titulo', identidade.corFonteTitulo);
+        atualizarCodigoCor('cor-fonte-subtitulo', identidade.corFonteSubtitulo);
+        atualizarCodigoCor('cor-categorias', identidade.corCategorias);
+        atualizarCodigoCor('cor-categoria-ativa', identidade.corCategoriaAtiva);
+    });
+}
 
 window.alternarDestaqueProduto = function (id, status) {
     if (typeof firebase === 'undefined') return;
