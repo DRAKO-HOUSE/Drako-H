@@ -3,135 +3,569 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DRAKO HOUSE - Cardápio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DRAKO HOUSE - Cardápio Online</title>
+    <meta name="description" content="Cardápio online da DRAKO HOUSE. Faça seu pedido de batatas recheadas, combos e bebidas com entrega rápida via WhatsApp.">
+    <meta name="theme-color" content="#2e5902">
     <link rel="icon" type="image/x-icon" href="./assets/logo.jpeg">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+    <!-- Overlay de Loja Fechada -->
     <div id="overlay-fechado">
-        <h1>LOJA FECHADA</h1>
-        <p>No momento não estamos aceitando pedidos.</p>
-        <p>Retornaremos em breve!</p>
+        <div class="fechado-box">
+            <h1>LOJA FECHADA</h1>
+            <p>No momento não estamos aceitando pedidos pelo delivery.</p>
+            <p style="font-size: 0.9rem; color: #bbb; margin-top: 8px;">Retornaremos em breve! Você pode continuar visualizando nosso cardápio.</p>
+            <button onclick="document.getElementById('overlay-fechado').style.display='none'" class="btn-secundario" style="margin-top: 18px; width: 100%; border-radius: 12px; padding: 12px;">Visualizar Cardápio</button>
+        </div>
     </div>
 
+    <!-- Cabeçalho Principal -->
     <header class="main-header">
-        <img src="./assets/logo.jpeg" alt="Drakohouse Logo" class="logo" id="logo-empresa">
-        <div class="header-text">
-            <h1>DRAKO HOUSE</h1>
-            <p>Sua dose diária de felicidade.</p>
+        <div class="header-content">
+            <div class="status-loja-pill" id="badge-status-loja">
+                <span class="status-dot" id="status-dot"></span>
+                <span id="texto-status-loja">Aberto para Pedidos</span>
+            </div>
+
+            <img src="./assets/logo.jpeg" alt="Drako House Logo" class="logo" id="logo-empresa">
+            
+            <div class="header-text">
+                <h1>DRAKO HOUSE</h1>
+                <p>Sua dose diária de felicidade.</p>
+            </div>
+
+            <!-- Barra de Busca Instantânea -->
+            <div class="busca-container">
+                <div class="busca-input-wrapper">
+                    <span class="busca-icone">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </span>
+                    <input type="text" id="campo-busca" placeholder="O que você quer pedir hoje?" autocomplete="off" oninput="filtrarCardapio(this.value)">
+                    <button id="btn-limpar-busca" class="btn-limpar-busca" onclick="limparBusca()" style="display:none;" aria-label="Limpar busca">✕</button>
+                </div>
+            </div>
         </div>
     </header>
 
-    <nav class="menu-categorias">
-        <a href="#destaques" id="link-nav-destaques" class="active">⭐ Destaques</a>
-        <a href="#batatas">Batatas</a>
-        <a href="#combos">Combos</a>
-        <a href="#bebidas">Bebidas</a>
-    </nav>
+    <!-- Navegação de Categorias Horizontal Fixa -->
+    <div class="menu-categorias-wrapper">
+        <nav class="menu-categorias" id="nav-categorias">
+            <a href="#destaques" id="link-nav-destaques" class="active">⭐ Destaques</a>
+            <a href="#batatas">🍟 Batatas</a>
+            <a href="#combos">🍔 Combos</a>
+            <a href="#bebidas">🥤 Bebidas</a>
+        </nav>
+    </div>
 
+    <!-- Conteúdo Principal com Carrosséis Horizontais -->
     <main class="container">
-        <section id="destaques" class="secao-categoria">
-            <h2 class="categoria-titulo">⭐ DESTAQUES DA CASA</h2>
-            <div class="cardapio" id="lista-destaques">
-
-            </div>
-        </section>
-
-        <section id="batatas" class="secao-categoria">
-            <h2 class="categoria-titulo">SEÇÃO: BATATAS</h2>
-            <div class="cardapio" id="lista-batatas">
-
-            </div>
-        </section>
-
-
-        <section id="combos" class="secao-categoria">
-            <h2 class="categoria-titulo">SEÇÃO: COMBOS</h2>
-            <div class="cardapio" id="lista-combos">
-
-            </div>
-        </section>
-
-        <section id="bebidas" class="secao-categoria">
-            <h2 class="categoria-titulo">SEÇÃO: BEBIDAS</h2>
-            <div class="cardapio" id="lista-bebidas">
-
-            </div>
-        </section>
-    </main>
-
-    <footer class="carrinho-fixo">
-        <div id="dados-entrega" class="dados-entrega">
-            <h3 class="titulo-entrega">📍 Dados da Entrega</h3>
-            <select id="retirada ou entrega" onchange="mostrarCamposEntrega()" class="form-control">
-                <option value="entrega">Entrega</option>
-                <option value="retirada">Retirada no local</option>
-            </select>
-            <input type="text" id="nome-cliente" placeholder="Seu nome" required>
-            <input type="text" id="endereco-cliente" placeholder="Rua / Logradouro" required>
-
-            <div class="input-linha">
-                <input type="text" id="numero-casa" placeholder="Nº" style="width: 30%;">
-            </div>
-            <div class="form-group">
-                <select id="bairro" onchange="calcularFrete()" class="form-control"
-                    style="width: 100%; padding: 10px; border-radius: 8px;">
-                    <option value="" disabled selected>Clique para escolher o bairro...</option>
-                    <option value="5">Agua Nova</option>
-                    <option value="0">Centro</option>
-                    <option value="0">Estação da Luiz</option>
-                    <option value="0">Jardim Araújo</option>
-                    <option value="0">Jardim Formosa</option>
-                    <option value="0">José Mendes</option>
-                    <option value="0">Nova Avenida</option>
-                    <option value="0">Nova Morada</option>
-                    <option value="0">Novo Oeste</option>
-                    <option value="0">Oliveira</option>
-                    <option value="0">Planaltino</option>
-                    <option value="0">Sacramento</option>
-                    <option value="0">São Luiz</option>
-                    <option value="0">Vicente Ferreira</option>
-                </select>
-            </div>
-
-            <div id="exibicao-taxa"
-                style="display:none; margin-top: 15px; padding: 12px; border-left: 5px solid #e67e22; background-color: #fff3e0;">
-                <span id="texto-taxa" style="font-size: 1.1em;"></span>
-            </div>
-            <input type="text" id="ponto-referencia" placeholder="Ponto de referência (opcional)">
-
-            <div class="pagamento-selecao">
-                <label for="pagamento">Forma de Pagamento:</label>
-                <select id="pagamento">
-                    <option value="Dinheiro">Dinheiro</option>
-                    <option value="Pix">Pix</option>
-                    <option value="Cartão">Cartão (Maquininha)</option>
-                </select>
-            </div>
+        
+        <!-- Feedback de Busca Vazia -->
+        <div id="busca-vazia" class="busca-vazia" style="display:none;">
+            <div class="busca-vazia-icone">🔍</div>
+            <h3>Nenhum produto encontrado</h3>
+            <p>Não encontramos nenhum item correspondente ao termo pesquisado.</p>
+            <button onclick="limparBusca()" class="btn-secundario">Ver cardápio completo</button>
         </div>
 
-        <div class="resumo-info">
-            <div class="textos-resumo" onclick="abrirModalCarrinho()" style="cursor: pointer;"
-                title="Clique para ver os itens no carrinho">
-                <p>RESUMO DO PEDIDO 🛒</p>
-                <span>Itens: <span id="total-itens">0</span> | Total: R$ <span id="preco-total">0,00</span></span>
+        <!-- Seção: Destaques -->
+        <section id="destaques" class="secao-categoria">
+            <div class="categoria-header">
+                <h2 class="categoria-titulo categoria-titulo-destaque">⭐ Destaques da Casa</h2>
+                <span class="categoria-contador" id="contador-destaques">Especiais</span>
+            </div>
+            <div class="carrossel-wrapper">
+                <button class="btn-scroll-nav prev" onclick="rolarCarrossel('lista-destaques', -1)" aria-label="Rolar para a esquerda">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <div class="cardapio" id="lista-destaques">
+                    <!-- Cards dinâmicos inseridos via script.js -->
+                </div>
+                <button class="btn-scroll-nav next" onclick="rolarCarrossel('lista-destaques', 1)" aria-label="Rolar para a direita">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Seção: Batatas -->
+        <section id="batatas" class="secao-categoria">
+            <div class="categoria-header">
+                <h2 class="categoria-titulo">🍟 Nossas Batatas</h2>
+                <span class="categoria-contador" id="contador-batatas">Porções M e G</span>
+            </div>
+            <div class="carrossel-wrapper">
+                <button class="btn-scroll-nav prev" onclick="rolarCarrossel('lista-batatas', -1)" aria-label="Rolar para a esquerda">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <div class="cardapio" id="lista-batatas">
+                    <!-- Cards dinâmicos -->
+                </div>
+                <button class="btn-scroll-nav next" onclick="rolarCarrossel('lista-batatas', 1)" aria-label="Rolar para a direita">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Seção: Combos -->
+        <section id="combos" class="secao-categoria">
+            <div class="categoria-header">
+                <h2 class="categoria-titulo">🍔 Combos Especiais</h2>
+                <span class="categoria-contador" id="contador-combos">Mais Econômicos</span>
+            </div>
+            <div class="carrossel-wrapper">
+                <button class="btn-scroll-nav prev" onclick="rolarCarrossel('lista-combos', -1)" aria-label="Rolar para a esquerda">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <div class="cardapio" id="lista-combos">
+                    <!-- Cards dinâmicos -->
+                </div>
+                <button class="btn-scroll-nav next" onclick="rolarCarrossel('lista-combos', 1)" aria-label="Rolar para a direita">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Seção: Bebidas -->
+        <section id="bebidas" class="secao-categoria">
+            <div class="categoria-header">
+                <h2 class="categoria-titulo">🥤 Bebidas Geladas</h2>
+                <span class="categoria-contador" id="contador-bebidas">Refrescantes</span>
+            </div>
+            <div class="carrossel-wrapper">
+                <button class="btn-scroll-nav prev" onclick="rolarCarrossel('lista-bebidas', -1)" aria-label="Rolar para a esquerda">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <div class="cardapio" id="lista-bebidas">
+                    <!-- Cards dinâmicos -->
+                </div>
+                <button class="btn-scroll-nav next" onclick="rolarCarrossel('lista-bebidas', 1)" aria-label="Rolar para a direita">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Rodapé Elegante do Site -->
+    <footer class="site-footer">
+        <p><strong>DRAKO HOUSE</strong> • Todos os direitos reservados</p>
+        <p style="font-size: 0.8rem; margin-top: 4px;">Sua dose diária de felicidade em cada mordida.</p>
+        <button class="btn-acesso-admin" id="btn-abrir-admin" onclick="abrirModalAdmin()" title="Acesso Administrativo (Alt+A)">
+            <span>🔒 Acesso Restaurante</span>
+        </button>
+    </footer>
+
+    <!-- Barra Flutuante de Carrinho (Padrão iFood / Delivery Apps) -->
+    <div id="barra-carrinho-flutuante" class="barra-carrinho-flutuante" onclick="abrirModalCarrinho()" style="display: none;">
+        <div class="carrinho-flutuante-info">
+            <div class="carrinho-flutuante-badge">
+                🛒
+                <span id="total-itens-flutuante">0</span>
+            </div>
+            <div class="carrinho-flutuante-textos">
+                <span class="carrinho-flutuante-rotulo">Meu Pedido</span>
+                <span class="carrinho-flutuante-valor">R$ <span id="preco-total-flutuante">0,00</span></span>
+            </div>
+        </div>
+        <button class="carrinho-flutuante-btn" onclick="event.stopPropagation(); abrirModalCarrinho();">
+            <span>Ver Sacola</span>
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+    </div>
+
+    <!-- Modal de Personalização do Produto (Tamanhos, Adicionais, Observações) -->
+    <div id="modal-customizacao" class="modal-overlay bottom-sheet">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="custom-modal-titulo">Personalizar Produto</h3>
+                <button class="modal-btn-fechar" onclick="fecharModalCustomizacao()" aria-label="Fechar">✕</button>
+            </div>
+            <div class="modal-corpo">
+                <img id="custom-prod-img" src="" alt="Produto" class="custom-prod-banner">
+                <h2 id="custom-prod-nome" class="custom-prod-titulo">Nome do Produto</h2>
+                <p id="custom-prod-desc" class="custom-prod-desc">Descrição do produto</p>
+
+                <!-- Seletor de Tamanhos (quando aplicável) -->
+                <div id="custom-secao-tamanhos" style="display: none;">
+                    <div class="custom-secao-titulo">
+                        <span>Escolha o Tamanho</span>
+                        <span class="custom-secao-tag">Obrigatório</span>
+                    </div>
+                    <div class="tamanhos-grid" id="custom-tamanhos-container">
+                        <!-- Gerado dinamicamente -->
+                    </div>
+                </div>
+
+                <!-- Seletor de Adicionais -->
+                <div id="custom-secao-adicionais" style="display: none;">
+                    <div class="custom-secao-titulo">
+                        <span>Adicionais Especiais</span>
+                        <span class="custom-secao-tag">Opcional</span>
+                    </div>
+                    <div class="adicionais-custom-lista" id="custom-adicionais-container">
+                        <!-- Gerado dinamicamente -->
+                    </div>
+                </div>
+
+                <!-- Campo de Observação -->
+                <div style="margin-top: 16px;">
+                    <div class="custom-secao-titulo">
+                        <span>Alguma observação?</span>
+                        <span class="custom-secao-tag">Opcional</span>
+                    </div>
+                    <textarea id="custom-prod-obs" class="campo-obs-textarea" placeholder="Ex: Sem cebola, maionese à parte, ponto da batata..."></textarea>
+                </div>
             </div>
 
-            <div class="botoes-carrinho" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
-                <button id="btn-finalizar" onclick="enviarPedido()">Finalizar via WhatsApp</button>
-                <button id="btn-voltar" onclick="fecharDadosEntrega()"
-                    style="display: none; background-color: #777; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer;">
+            <div class="modal-rodape">
+                <div class="custom-rodape-acoes">
+                    <div class="custom-qtd-control">
+                        <button type="button" onclick="alterarQtdCustomizacao(-1)">-</button>
+                        <span id="custom-qtd-numero" class="custom-qtd-numero">1</span>
+                        <button type="button" onclick="alterarQtdCustomizacao(1)">+</button>
+                    </div>
+                    <button id="btn-adicionar-customizado" class="btn-confirmar-adicao" onclick="adicionarItemCustomizadoAoCarrinho()">
+                        <span>Adicionar ao Pedido</span>
+                        <span id="custom-total-botao">R$ 0,00</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Escolha de Sabores do Combo -->
+    <div id="modal-combo-sabores" class="modal-overlay bottom-sheet">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modal-combo-titulo">Escolha os Sabores</h3>
+                    <p id="modal-combo-descricao" style="font-size: 0.82rem; color: #666; margin-top: 2px;">Selecione os sabores desejados.</p>
+                </div>
+                <button class="modal-btn-fechar" onclick="fecharModalSabores()" aria-label="Fechar">✕</button>
+            </div>
+            <div class="modal-corpo" id="combo-sabores-opcoes">
+                <!-- Opções dinâmicas de batatas -->
+            </div>
+            <div class="modal-rodape">
+                <button id="btn-confirmar-combo" class="btn-confirmar-adicao" style="width: 100%; justify-content: center;">
+                    Confirmar Seleção
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal / Drawer Completo de Carrinho e Checkout -->
+    <div id="modal-carrinho" class="modal-overlay bottom-sheet">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.3rem;">🛒</span>
+                    <h3>Sua Sacola</h3>
+                </div>
+                <button class="modal-btn-fechar" onclick="fecharModalCarrinho()" aria-label="Fechar">✕</button>
+            </div>
+
+            <div class="modal-corpo">
+                <!-- Lista de Itens no Carrinho -->
+                <div id="lista-itens-carrinho" class="carrinho-itens-lista">
+                    <!-- Preenchido via script.js -->
+                </div>
+
+                <div id="secao-checkout-formulario" style="display: none;">
+                    <hr style="border: none; border-top: 1px solid #eee; margin: 18px 0;">
+
+                    <!-- Segmented Control: Entrega vs Retirada -->
+                    <div class="tipo-entrega-tabs">
+                        <button type="button" id="tab-tipo-entrega" class="tipo-entrega-btn ativo" onclick="selecionarTipoEntrega('entrega')">
+                            <span>🛵 Entrega</span>
+                        </button>
+                        <button type="button" id="tab-tipo-retirada" class="tipo-entrega-btn" onclick="selecionarTipoEntrega('retirada')">
+                            <span>🏬 Retirada</span>
+                        </button>
+                    </div>
+
+                    <!-- Select oculto para preservar compatibilidade com funções antigas -->
+                    <select id="retirada ou entrega" onchange="mostrarCamposEntrega()" style="display: none;">
+                        <option value="entrega" selected>Entrega</option>
+                        <option value="retirada">Retirada no local</option>
+                    </select>
+
+                    <!-- Formulário de Entrega e Identificação -->
+                    <div id="dados-entrega" class="form-entrega-secao">
+                        <label class="form-label" for="nome-cliente">Seu Nome *</label>
+                        <input type="text" id="nome-cliente" class="form-input" placeholder="Como podemos te chamar?" required>
+
+                        <div id="grupo-campos-endereco">
+                            <label class="form-label" for="endereco-cliente">Endereço de Entrega *</label>
+                            <input type="text" id="endereco-cliente" class="form-input" placeholder="Rua / Avenida / Travessa">
+
+                            <div class="form-row">
+                                <div style="flex: 0 0 90px;">
+                                    <label class="form-label" for="numero-casa">Nº *</label>
+                                    <input type="text" id="numero-casa" class="form-input" placeholder="Ex: 123">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label class="form-label" for="bairro">Bairro *</label>
+                                    <select id="bairro" onchange="calcularFrete()" class="form-select">
+                                        <option value="" disabled selected>Selecione seu bairro...</option>
+                                        <option value="5">Agua Nova</option>
+                                        <option value="0">Centro</option>
+                                        <option value="0">Estação da Luiz</option>
+                                        <option value="0">Jardim Araújo</option>
+                                        <option value="0">Jardim Formosa</option>
+                                        <option value="0">José Mendes</option>
+                                        <option value="0">Nova Avenida</option>
+                                        <option value="0">Nova Morada</option>
+                                        <option value="0">Novo Oeste</option>
+                                        <option value="0">Oliveira</option>
+                                        <option value="0">Planaltino</option>
+                                        <option value="0">Sacramento</option>
+                                        <option value="0">São Luiz</option>
+                                        <option value="0">Vicente Ferreira</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="exibicao-taxa" class="taxa-frete-box">
+                                <span id="texto-taxa"></span>
+                            </div>
+
+                            <div style="margin-top: 4px;">
+                                <label class="form-label" for="ponto-referencia">Ponto de Referência</label>
+                                <input type="text" id="ponto-referencia" class="form-input" placeholder="Ex: Próximo à padaria, casa com portão verde...">
+                            </div>
+                        </div>
+
+                        <!-- Forma de Pagamento -->
+                        <div style="margin-top: 6px;">
+                            <label class="form-label">Forma de Pagamento</label>
+                            <div class="pagamento-opcoes-grid">
+                                <button type="button" class="pagamento-card-btn ativo" onclick="selecionarPagamento('Pix', this)">
+                                    <span class="icone">⚡</span>
+                                    <span>Pix</span>
+                                </button>
+                                <button type="button" class="pagamento-card-btn" onclick="selecionarPagamento('Cartão (Maquininha)', this)">
+                                    <span class="icone">💳</span>
+                                    <span>Cartão</span>
+                                </button>
+                                <button type="button" class="pagamento-card-btn" onclick="selecionarPagamento('Dinheiro', this)">
+                                    <span class="icone">💵</span>
+                                    <span>Dinheiro</span>
+                                </button>
+                            </div>
+
+                            <select id="pagamento" style="display: none;">
+                                <option value="Pix" selected>Pix</option>
+                                <option value="Cartão (Maquininha)">Cartão (Maquininha)</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                            </select>
+
+                            <div id="campo-troco-wrapper">
+                                <label class="form-label" for="troco-para">Precisa de troco para quanto?</label>
+                                <input type="text" id="troco-para" class="form-input" placeholder="Ex: R$ 50,00 ou Não preciso">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumo Financeiro -->
+                    <div class="resumo-financeiro-box">
+                        <div class="resumo-linha">
+                            <span>Itens (<span id="total-itens">0</span>):</span>
+                            <span>R$ <span id="preco-subtotal">0,00</span></span>
+                        </div>
+                        <div class="resumo-linha" id="linha-resumo-frete">
+                            <span>Taxa de Entrega:</span>
+                            <span id="valor-resumo-frete">R$ 0,00</span>
+                        </div>
+                        <div class="resumo-linha total">
+                            <span>Total do Pedido:</span>
+                            <span>R$ <span id="preco-total">0,00</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-rodape" style="flex-direction: column; gap: 8px;">
+                <button id="btn-finalizar" class="btn-enviar-whatsapp" onclick="enviarPedido()">
+                    <span>Finalizar via WhatsApp</span>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.539 1.77.828 2.791.831 3.18 0 5.768-2.587 5.768-5.766 0-3.18-2.588-5.767-5.768-5.767zm7.683 5.766c0 4.237-3.447 7.684-7.683 7.684-1.328 0-2.457-.34-3.48-.925l-4.551 1.192 1.213-4.436c-.66-1.077-1.042-2.336-1.042-3.515 0-4.237 3.448-7.684 7.684-7.684 4.237 0 7.683 3.447 7.683 7.684zm-3.328 3.52c-.179-.089-1.057-.522-1.221-.582-.163-.06-.282-.089-.401.089-.119.179-.462.582-.566.701-.104.119-.209.134-.388.045-.179-.089-.757-.279-1.442-.89-.533-.475-.893-1.062-1.002-1.241-.109-.179-.012-.276.078-.365.081-.08.179-.209.268-.313.089-.104.119-.179.179-.298.06-.119.03-.224-.015-.313-.045-.089-.401-.967-.55-1.325-.145-.349-.292-.301-.401-.307-.104-.005-.224-.007-.343-.007s-.313.045-.477.224c-.164.179-.626.612-.626 1.492s.641 1.731.73 1.85c.089.119 1.261 1.926 3.056 2.7 1.795.775 1.795.517 2.122.487.328-.03 1.057-.432 1.206-.85.149-.418.149-.775.104-.85-.045-.075-.164-.119-.343-.208z"/></svg>
+                </button>
+                <button id="btn-voltar" onclick="fecharDadosEntrega()" class="btn-secundario" style="display: none; width: 100%; border-radius: 12px; padding: 10px;">
                     ← Adicionar mais itens
                 </button>
             </div>
         </div>
-    </footer>
+    </div>
 
+    <!-- Modal Administrativo (100% Compatível com Firebase) -->
+    <div id="modal-admin" class="modal-overlay">
+        <div class="modal-container" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Painel Administrativo</h3>
+                <button class="modal-btn-fechar" onclick="document.getElementById('modal-admin').style.display='none'">✕</button>
+            </div>
 
+            <div class="modal-corpo">
+                <!-- Login Admin -->
+                <div id="admin-login">
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">Digite a senha de administrador:</p>
+                    <input type="password" id="senha-admin" class="form-input" placeholder="Digite a senha" style="margin-bottom: 12px;">
+                    <button onclick="verificarSenha()" class="btn-confirmar-adicao" style="width: 100%; justify-content: center;">Entrar</button>
+                </div>
+
+                <!-- Controles Admin -->
+                <div id="admin-controles" style="display: none;">
+                    <div class="admin-tabs">
+                        <button type="button" class="admin-tab-btn ativo" onclick="alternarTabAdmin('produtos', this)">Produtos</button>
+                        <button type="button" class="admin-tab-btn" onclick="alternarTabAdmin('adicionais', this)">Adicionais</button>
+                        <button type="button" class="admin-tab-btn" onclick="alternarTabAdmin('visual', this)">Identidade Visual</button>
+                        <button type="button" class="admin-tab-btn" onclick="alternarTabAdmin('loja', this)">Status Loja</button>
+                    </div>
+
+                    <!-- Tab: Status da Loja -->
+                    <div id="tab-conteudo-loja" class="tab-conteudo" style="display: none;">
+                        <p><strong>Status Atual da Loja:</strong></p>
+                        <div style="display: flex; gap: 10px; margin: 15px 0;">
+                            <button onclick="alternarLoja(true)" style="flex:1; padding:12px; background:#25D366; color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer;">ABRIR LOJA</button>
+                            <button onclick="alternarLoja(false)" style="flex:1; padding:12px; background:#e74c3c; color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer;">FECHAR LOJA</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Identidade Visual -->
+                    <div id="tab-conteudo-visual" class="tab-conteudo" style="display: none;">
+                        <div id="form-identidade-visual" style="background: #f9f9f9; padding: 14px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 15px;">
+                            <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 3px;">Logo da empresa:</label>
+                            <input type="file" id="logo-file-input" accept="image/*" onchange="converterLogoParaBase64(this)" class="form-input" style="padding: 6px; margin-bottom: 8px;">
+                            <img id="preview-logo" src="./assets/logo.jpeg" alt="Prévia do logo" style="width:70px; height:70px; display:block; margin: 0 0 10px; border-radius:50%; object-fit:cover; border:1px solid #ddd;">
+                            <input type="hidden" id="logo-empresa-base64">
+
+                            <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 3px;">Imagem de fundo do cabeçalho:</label>
+                            <input type="file" id="fundo-cabecalho-file-input" accept="image/*" onchange="converterFundoCabecalhoParaBase64(this)" class="form-input" style="padding: 6px; margin-bottom: 8px;">
+                            <img id="preview-fundo-cabecalho" src="" alt="Prévia do fundo" style="width:100%; height:70px; display:none; margin: 0 0 10px; border-radius:8px; object-fit:cover; border:1px solid #ddd;">
+                            <input type="hidden" id="fundo-cabecalho-base64">
+
+                            <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 3px;">Título do cabeçalho:</label>
+                            <input type="text" id="titulo-cabecalho" value="DRAKO HOUSE" maxlength="80" class="form-input" style="margin-bottom: 8px;">
+
+                            <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 3px;">Subtítulo do cabeçalho:</label>
+                            <input type="text" id="subtitulo-cabecalho" value="Sua dose diária de felicidade." maxlength="120" class="form-input" style="margin-bottom: 10px;">
+
+                            <div class="controles-cores-identidade">
+                                <label class="controle-cor">Cor principal
+                                    <span class="campo-cor">
+                                        <input type="color" id="cor-principal" value="#516e03" oninput="atualizarCodigoCor('cor-principal', this.value)">
+                                        <input type="text" id="codigo-cor-principal" value="#516e03" maxlength="7" spellcheck="false" onchange="aplicarCodigoCor('cor-principal', this.value)">
+                                    </span>
+                                </label>
+                                <label class="controle-cor">Cor escura
+                                    <span class="campo-cor">
+                                        <input type="color" id="cor-escura" value="#2e5902" oninput="atualizarCodigoCor('cor-escura', this.value)">
+                                        <input type="text" id="codigo-cor-escura" value="#2e5902" maxlength="7" spellcheck="false" onchange="aplicarCodigoCor('cor-escura', this.value)">
+                                    </span>
+                                </label>
+                                <label class="controle-cor">Cor de destaque
+                                    <span class="campo-cor">
+                                        <input type="color" id="cor-destaque" value="#f2f2f2" oninput="atualizarCodigoCor('cor-destaque', this.value)">
+                                        <input type="text" id="codigo-cor-destaque" value="#f2f2f2" maxlength="7" spellcheck="false" onchange="aplicarCodigoCor('cor-destaque', this.value)">
+                                    </span>
+                                </label>
+                                <label class="controle-cor">Fundo do site
+                                    <span class="campo-cor">
+                                        <input type="color" id="cor-fundo" value="#f2f2f2" oninput="atualizarCodigoCor('cor-fundo', this.value)">
+                                        <input type="text" id="codigo-cor-fundo" value="#f2f2f2" maxlength="7" spellcheck="false" onchange="aplicarCodigoCor('cor-fundo', this.value)">
+                                    </span>
+                                </label>
+                                <label class="controle-cor">Fonte do título
+                                    <span class="campo-cor">
+                                        <input type="color" id="cor-fonte-titulo" value="#f6f4f3" oninput="atualizarCodigoCor('cor-fonte-titulo', this.value)">
+                                        <input type="text" id="codigo-cor-fonte-titulo" value="#f6f4f3" maxlength="7" spellcheck="false" onchange="aplicarCodigoCor('cor-fonte-titulo', this.value)">
+                                    </span>
+                                </label>
+                                <label class="controle-cor">Fonte do subtítulo
+                                    <span class="campo-cor">
+                                        <input type="color" id="cor-fonte-subtitulo" value="#f6f4f3" oninput="atualizarCodigoCor('cor-fonte-subtitulo', this.value)">
+                                        <input type="text" id="codigo-cor-fonte-subtitulo" value="#f6f4f3" maxlength="7" spellcheck="false" onchange="aplicarCodigoCor('cor-fonte-subtitulo', this.value)">
+                                    </span>
+                                </label>
+                                <label class="controle-cor">Cor das categorias
+                                    <span class="campo-cor">
+                                        <input type="color" id="cor-categorias" value="#516e03" oninput="atualizarCodigoCor('cor-categorias', this.value)">
+                                        <input type="text" id="codigo-cor-categorias" value="#516e03" maxlength="7" spellcheck="false" onchange="aplicarCodigoCor('cor-categorias', this.value)">
+                                    </span>
+                                </label>
+                                <label class="controle-cor">Fundo da categoria ativa
+                                    <span class="campo-cor">
+                                        <input type="color" id="cor-categoria-ativa" value="#516e03" oninput="atualizarCodigoCor('cor-categoria-ativa', this.value)">
+                                        <input type="text" id="codigo-cor-categoria-ativa" value="#516e03" maxlength="7" spellcheck="false" onchange="aplicarCodigoCor('cor-categoria-ativa', this.value)">
+                                    </span>
+                                </label>
+                            </div>
+                            <button onclick="salvarIdentidadeVisual()" class="btn-confirmar-adicao" style="width:100%; justify-content:center; margin-top: 10px;">Salvar Identidade Visual</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Gerenciar Produtos -->
+                    <div id="tab-conteudo-produtos" class="tab-conteudo">
+                        <div id="form-produto" style="background: #f9f9f9; padding: 14px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 15px;">
+                            <input type="hidden" id="prod-id">
+                            <input type="text" id="prod-nome" placeholder="Nome do Produto" class="form-input" style="margin-bottom:8px;">
+                            <input type="text" id="prod-desc" placeholder="Descrição apetitosa" class="form-input" style="margin-bottom:8px;">
+
+                            <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 3px;">Foto do Produto:</label>
+                            <input type="file" id="prod-file-input" accept="image/*" onchange="converterImagemParaBase64(this)" class="form-input" style="padding: 6px; margin-bottom:8px;">
+                            <input type="hidden" id="prod-foto">
+                            <img id="preview-foto" src="" style="max-width: 80px; max-height: 80px; display: none; margin-bottom: 8px; border-radius: 8px; object-fit: cover;" alt="Preview">
+
+                            <select id="prod-categoria" class="form-select" style="margin-bottom:8px;">
+                                <option value="batatas">Batatas (Com Tamanhos M e G)</option>
+                                <option value="combos">Combos (Preço Único + Escolha de Sabores)</option>
+                                <option value="bebidas">Bebidas (Preço Único)</option>
+                            </select>
+                            <select id="prod-qtd-sabores" class="form-select" style="margin-bottom:8px;">
+                                <option value="2">Combo: Escolher 2 Sabores (Padrão)</option>
+                                <option value="1">Combo: Escolher 1 Sabor</option>
+                            </select>
+                            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                <input type="number" step="0.01" id="prod-preco-m" placeholder="Preço M (ou Único)" class="form-input">
+                                <input type="number" step="0.01" id="prod-preco-g" placeholder="Preço G (Opcional)" class="form-input">
+                            </div>
+                            <button onclick="salvarProdutoFirebase()" class="btn-confirmar-adicao" style="width:100%; justify-content:center;">Salvar Produto</button>
+                        </div>
+
+                        <div id="lista-produtos-admin" style="max-height: 250px; overflow-y: auto;">
+                            <!-- Lista via script.js -->
+                        </div>
+                    </div>
+
+                    <!-- Tab: Gerenciar Adicionais -->
+                    <div id="tab-conteudo-adicionais" class="tab-conteudo" style="display: none;">
+                        <div id="form-adicional" style="background: #f9f9f9; padding: 14px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 15px;">
+                            <input type="text" id="add-nome" placeholder="Nome do Adicional (ex: Bacon Crocante)" class="form-input" style="margin-bottom:8px;">
+                            <input type="number" step="0.01" id="add-preco" placeholder="Preço adicional (R$)" class="form-input" style="margin-bottom:8px;">
+                            <button onclick="salvarAdicionalFirebase()" class="btn-confirmar-adicao" style="width:100%; justify-content:center;">Salvar Adicional</button>
+                        </div>
+
+                        <div id="lista-adicionais-admin" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Lista via script.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-rodape">
+                <button onclick="document.getElementById('modal-admin').style.display='none'" class="btn-secundario" style="width:100%;">Fechar Painel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
@@ -148,212 +582,6 @@
         firebase.initializeApp(firebaseConfig);
     </script>
     <script src="script.js"></script>
-
-
-    <div id="modal-admin"
-        style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; z-index:10001; border-radius:15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; color: black;">
-        <h3 style="margin-top:0;">Acesso Administrativo</h3>
-
-        <div id="admin-login">
-            <input type="password" id="senha-admin" placeholder="Digite a senha"
-                style="width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:8px; box-sizing: border-box;">
-            <button onclick="verificarSenha()"
-                style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Entrar</button>
-        </div>
-
-        <div id="admin-controles" style="display:none;">
-            <p><strong>Status Atual da Loja:</strong></p>
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <button onclick="alternarLoja(true)"
-                    style="flex:1; padding:10px; background:#25D366; color:white; border:none; border-radius:8px; cursor:pointer;">ABRIR
-                    LOJA</button>
-                <button onclick="alternarLoja(false)"
-                    style="flex:1; padding:10px; background:#B02A37; color:white; border:none; border-radius:8px; cursor:pointer;">FECHAR
-                    LOJA</button>
-            </div>
-
-            <hr style="margin: 15px 0;">
-
-            <h4>Identidade visual</h4>
-            <div id="form-identidade-visual" style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
-                <label style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Logo da empresa:</label>
-                <input type="file" id="logo-file-input" accept="image/*" onchange="converterLogoParaBase64(this)"
-                    style="width:100%; padding:6px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px; background:white;">
-                <img id="preview-logo" src="./assets/logo.jpeg" alt="Prévia do logo"
-                    style="width:70px; height:70px; display:block; margin: 0 0 10px; border-radius:50%; object-fit:cover; border:1px solid #ddd;">
-                <input type="hidden" id="logo-empresa-base64">
-                <label style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Imagem de fundo do cabeçalho:</label>
-                <input type="file" id="fundo-cabecalho-file-input" accept="image/*" onchange="converterFundoCabecalhoParaBase64(this)"
-                    style="width:100%; padding:6px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px; background:white;">
-                <img id="preview-fundo-cabecalho" src="" alt="Prévia do fundo do cabeçalho"
-                    style="width:100%; height:70px; display:none; margin: 0 0 10px; border-radius:4px; object-fit:cover; border:1px solid #ddd;">
-                <input type="hidden" id="fundo-cabecalho-base64">
-                <label style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Título do cabeçalho:</label>
-                <input type="text" id="titulo-cabecalho" value="DRAKO HOUSE" maxlength="80"
-                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
-                <label style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Subtítulo do cabeçalho:</label>
-                <input type="text" id="subtitulo-cabecalho" value="Sua dose diária de felicidade." maxlength="120"
-                    style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px;">
-                <div class="controles-cores-identidade">
-                    <label class="controle-cor">Cor principal
-                        <span class="campo-cor">
-                            <input type="color" id="cor-principal" value="#516e03" oninput="atualizarCodigoCor('cor-principal', this.value)">
-                            <input type="text" id="codigo-cor-principal" value="#516e03" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da cor principal" onchange="aplicarCodigoCor('cor-principal', this.value)">
-                        </span>
-                    </label>
-                    <label class="controle-cor">Cor escura
-                        <span class="campo-cor">
-                            <input type="color" id="cor-escura" value="#2e5902" oninput="atualizarCodigoCor('cor-escura', this.value)">
-                            <input type="text" id="codigo-cor-escura" value="#2e5902" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da cor escura" onchange="aplicarCodigoCor('cor-escura', this.value)">
-                        </span>
-                    </label>
-                    <label class="controle-cor">Cor de destaque
-                        <span class="campo-cor">
-                            <input type="color" id="cor-destaque" value="#f2f2f2" oninput="atualizarCodigoCor('cor-destaque', this.value)">
-                            <input type="text" id="codigo-cor-destaque" value="#f2f2f2" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da cor de destaque" onchange="aplicarCodigoCor('cor-destaque', this.value)">
-                        </span>
-                    </label>
-                    <label class="controle-cor">Fundo do site
-                        <span class="campo-cor">
-                            <input type="color" id="cor-fundo" value="#f2f2f2" oninput="atualizarCodigoCor('cor-fundo', this.value)">
-                            <input type="text" id="codigo-cor-fundo" value="#f2f2f2" maxlength="7" spellcheck="false" aria-label="Código hexadecimal do fundo do site" onchange="aplicarCodigoCor('cor-fundo', this.value)">
-                        </span>
-                    </label>
-                    <label class="controle-cor">Fonte do título
-                        <span class="campo-cor">
-                            <input type="color" id="cor-fonte-titulo" value="#f6f4f3" oninput="atualizarCodigoCor('cor-fonte-titulo', this.value)">
-                            <input type="text" id="codigo-cor-fonte-titulo" value="#f6f4f3" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da fonte do título" onchange="aplicarCodigoCor('cor-fonte-titulo', this.value)">
-                        </span>
-                    </label>
-                    <label class="controle-cor">Fonte do subtítulo
-                        <span class="campo-cor">
-                            <input type="color" id="cor-fonte-subtitulo" value="#f6f4f3" oninput="atualizarCodigoCor('cor-fonte-subtitulo', this.value)">
-                            <input type="text" id="codigo-cor-fonte-subtitulo" value="#f6f4f3" maxlength="7" spellcheck="false" aria-label="Código hexadecimal da fonte do subtítulo" onchange="aplicarCodigoCor('cor-fonte-subtitulo', this.value)">
-                        </span>
-                    </label>
-                    <label class="controle-cor">Cor das categorias
-                        <span class="campo-cor">
-                            <input type="color" id="cor-categorias" value="#516e03" oninput="atualizarCodigoCor('cor-categorias', this.value)">
-                            <input type="text" id="codigo-cor-categorias" value="#516e03" maxlength="7" spellcheck="false" aria-label="Código hexadecimal das categorias" onchange="aplicarCodigoCor('cor-categorias', this.value)">
-                        </span>
-                    </label>
-                    <label class="controle-cor">Fundo da categoria ativa
-                        <span class="campo-cor">
-                            <input type="color" id="cor-categoria-ativa" value="#516e03" oninput="atualizarCodigoCor('cor-categoria-ativa', this.value)">
-                            <input type="text" id="codigo-cor-categoria-ativa" value="#516e03" maxlength="7" spellcheck="false" aria-label="Código hexadecimal do fundo da categoria ativa" onchange="aplicarCodigoCor('cor-categoria-ativa', this.value)">
-                        </span>
-                    </label>
-                </div>
-                <button onclick="salvarIdentidadeVisual()"
-                    style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Salvar identidade visual</button>
-            </div>
-
-            <hr style="margin: 15px 0;">
-
-            <h4>Gerenciar Produtos</h4>
-            <div id="form-produto" style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
-                <input type="hidden" id="prod-id">
-                <input type="text" id="prod-nome" placeholder="Nome do Produto"
-                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
-                <input type="text" id="prod-desc" placeholder="Descrição"
-                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
-
-
-                <label
-                    style="font-size: 0.85rem; color: #555; display: block; text-align: left; margin-bottom: 3px;">Foto
-                    do Produto:</label>
-                <input type="file" id="prod-file-input" accept="image/*" onchange="converterImagemParaBase64(this)"
-                    style="width:100%; padding:6px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px; background:white;">
-                <input type="hidden" id="prod-foto">
-                <img id="preview-foto" src=""
-                    style="max-width: 80px; max-height: 80px; display: none; margin-bottom: 8px; border-radius: 4px; object-fit: cover;"
-                    alt="Preview">
-
-                <select id="prod-categoria"
-                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
-                    <option value="batatas">Batatas (Com Tamanhos M e G)</option>
-                    <option value="combos">Combos (preco unico)</option>
-                    <option value="bebidas">Bebidas (Preço Único)</option>
-                </select>
-                <select id="prod-qtd-sabores"
-                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
-                    <option value="2">Combo: Escolher 2 Sabores (Padrão)</option>
-                    <option value="1">Combo: Escolher 1 Sabor</option>
-                </select>
-                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                    <input type="number" step="0.01" id="prod-preco-m" placeholder="Preço M (ou Preço Único)"
-                        style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
-                    <input type="number" step="0.01" id="prod-preco-g" placeholder="Preço G (Opcional)"
-                        style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px;">
-                </div>
-                <button onclick="salvarProdutoFirebase()"
-                    style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Salvar
-                    Produto</button>
-            </div>
-
-            <div id="lista-produtos-admin" style="max-height: 200px; overflow-y: auto;">
-
-            </div>
-
-            <hr style="margin: 15px 0;">
-
-            <h4>Gerenciar Adicionais (Batatas)</h4>
-            <div id="form-adicional"
-                style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
-                <input type="text" id="add-nome" placeholder="Nome do Adicional (ex: Bacon)"
-                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
-                <input type="number" step="0.01" id="add-preco" placeholder="Preço (R$)"
-                    style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ccc; border-radius:4px;">
-                <button onclick="salvarAdicionalFirebase()"
-                    style="width:100%; padding:10px; background:#2E5902; color:white; border:none; border-radius:8px; cursor:pointer;">Salvar
-                    Adicional</button>
-            </div>
-
-            <div id="lista-adicionais-admin" style="max-height: 150px; overflow-y: auto;">
-
-            </div>
-        </div>
-
-        <button onclick="document.getElementById('modal-admin').style.display='none'"
-            style="margin-top:15px; background:none; border:none; color:#666; cursor:pointer; width:100%;">Sair/Fechar</button>
-    </div>
-
-
-    <div id="modal-combo-sabores"
-        style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 10002; justify-content: center; align-items: center;">
-        <div
-            style="background: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; color: black;">
-            <h3 id="modal-combo-titulo" style="margin-top: 0;">Escolha os sabores</h3>
-            <p id="modal-combo-descricao" style="font-size: 0.9rem; color: #555;"></p>
-            <div id="combo-sabores-opcoes">
-
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button id="btn-confirmar-combo"
-                    style="flex: 1; padding: 12px; background: var(--vermelho-escuro); color: white; border: none; border-radius: 8px; cursor: pointer;">Confirmar
-                    Seleção</button>
-                <button onclick="fecharModalSabores()"
-                    style="flex: 1; padding: 12px; background: #777; color: white; border: none; border-radius: 8px; cursor: pointer;">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-
-    <div id="modal-carrinho"
-        style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 10002; justify-content: center; align-items: center;">
-        <div
-            style="background: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; color: black;">
-            <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Meu Carrinho</h3>
-            <div id="lista-itens-carrinho" style="margin-top: 15px;">
-
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button onclick="fecharModalCarrinho()"
-                    style="width: 100%; padding: 12px; background: #777; color: white; border: none; border-radius: 8px; cursor: pointer;">Fechar</button>
-            </div>
-        </div>
-    </div>
-
 </body>
 
 </html>
