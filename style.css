@@ -145,15 +145,20 @@ body {
 }
 
 .cardapio {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-wrap: nowrap;
   gap: 15px;
   width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 @media (min-width: 768px) {
   .cardapio {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    scrollbar-gutter: stable both-edges;
   }
 }
 
@@ -176,6 +181,7 @@ body {
 
 .item-produto {
   display: flex;
+  flex: 0 0 min(85vw, 320px);
   flex-direction: column;
   justify-content: space-between;
   background: var(--branco);
