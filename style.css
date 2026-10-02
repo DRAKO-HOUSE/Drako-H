@@ -452,7 +452,8 @@ body {
   scroll-snap-type: x mandatory;
   scroll-padding: 16px;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  /* Permite rolar a página verticalmente mesmo começando sobre um card. */
+  touch-action: pan-x pan-y;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
 }
