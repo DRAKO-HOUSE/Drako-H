@@ -13,13 +13,67 @@ document.addEventListener('DOMContentLoaded', () => {
     let customAdicionaisSelecionados = [];
     let customQtd = 1;
 
-    // --- Monitoramento Firebase ---
+    // --- Cache Local e Estados de Carregamento ---
+    const CACHE_KEY_PRODUTOS = 'drako_cache_produtos_v1';
+    const CACHE_KEY_ADICIONAIS = 'drako_cache_adicionais_v1';
+
+    function carregarCacheLocal() {
+        try {
+            const cachedProdutos = localStorage.getItem(CACHE_KEY_PRODUTOS);
+            const cachedAdicionais = localStorage.getItem(CACHE_KEY_ADICIONAIS);
+            if (cachedAdicionais) {
+                listaAdicionais = JSON.parse(cachedAdicionais) || {};
+            }
+            if (cachedProdutos) {
+                dadosProdutos = JSON.parse(cachedProdutos) || {};
+                renderizarListasCardapio(dadosProdutos);
+                return true;
+            }
+        } catch (e) {
+            console.warn('Não foi possível ler cache local:', e);
+        }
+        return false;
+    }
+
+    function salvarCacheLocal(chave, dados) {
+        try {
+            localStorage.setItem(chave, JSON.stringify(dados));
+        } catch (e) {
+            console.warn('Erro ao salvar no cache local:', e);
+        }
+    }
+
+    function renderizarSkeletonsIniciais() {
+        const containers = ['lista-destaques', 'lista-batatas', 'lista-combos', 'lista-bebidas'];
+        containers.forEach(cid => {
+            const el = document.getElementById(cid);
+            if (!el) return;
+            el.innerHTML = `
+                <div class="skeleton-card">
+                    <div class="skeleton-animado skeleton-thumb"></div>
+                    <div class="skeleton-animado skeleton-titulo"></div>
+                    <div class="skeleton-animado skeleton-texto"></div>
+                    <div class="skeleton-animado skeleton-preco"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-animado skeleton-thumb"></div>
+                    <div class="skeleton-animado skeleton-titulo"></div>
+                    <div class="skeleton-animado skeleton-texto"></div>
+                    <div class="skeleton-animado skeleton-preco"></div>
+                </div>
+            `;
+        });
+    }
+
+    // --- Monitoramento Firebase Otimizado ---
 
     function monitorarAdicionais() {
         if (typeof firebase === 'undefined') return;
         firebase.database().ref('adicionais').on('value', (snapshot) => {
             listaAdicionais = snapshot.val() || {};
-            carregarCardapio();
+            salvarCacheLocal(CACHE_KEY_ADICIONAIS, listaAdicionais);
+        }, (error) => {
+            console.error('Erro ao escutar adicionais:', error);
         });
     }
 
@@ -28,7 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         firebase.database().ref('produtos').on('value', (snapshot) => {
             dadosProdutos = snapshot.val() || {};
+            salvarCacheLocal(CACHE_KEY_PRODUTOS, dadosProdutos);
             renderizarListasCardapio(dadosProdutos);
+        }, (error) => {
+            console.error('Erro ao carregar produtos:', error);
+            if (!dadosProdutos || Object.keys(dadosProdutos).length === 0) {
+                exibirEstadoVazioCardapio();
+            }
         });
     }
 
@@ -916,8 +976,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     window.addEventListener('scroll', changeLinkStateOnScroll, { passive: true });
 
-    // Inicialização
+    // Inicialização Instantânea com Cache e Sincronização em Background
+    const temCache = carregarCacheLocal();
+    if (!temCache) {
+        renderizarSkeletonsIniciais();
+    }
     monitorarAdicionais();
+    carregarCardapio();
 });
 
 // --- Monitoramento do Status da Loja ---
@@ -1069,35 +1134,75 @@ window.aplicarCodigoCor = function (idCampo, valor) {
     atualizarCodigoCor(idCampo, valorNormalizado);
 };
 
-window.converterLogoParaBase64 = function (input) {
+// Utilitário para redimensionar e comprimir imagens no cliente (HTML5 Canvas)
+function comprimirImagemCliente(file, maxLargura = 500, maxAltura = 500, qualidade = 0.75) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                let largura = img.width;
+                let altura = img.height;
+
+                if (largura > altura) {
+                    if (largura > maxLargura) {
+                        altura = Math.round((altura * maxLargura) / largura);
+                        largura = maxLargura;
+                    }
+                } else {
+                    if (altura > maxAltura) {
+                        largura = Math.round((largura * maxAltura) / altura);
+                        altura = maxAltura;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = largura;
+                canvas.height = altura;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, largura, altura);
+
+                // Converter para JPEG otimizado
+                const dataUrl = canvas.toDataURL('image/jpeg', qualidade);
+                resolve(dataUrl);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+window.converterLogoParaBase64 = async function (input) {
     const file = input.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function (event) {
-        const logo = event.target.result;
+    try {
+        const logo = await comprimirImagemCliente(file, 400, 400, 0.82);
         document.getElementById('logo-empresa-base64').value = logo;
         const preview = document.getElementById('preview-logo');
         if (preview) preview.src = logo;
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+        console.error('Erro ao processar logo:', err);
+    }
 };
 
-window.converterFundoCabecalhoParaBase64 = function (input) {
+window.converterFundoCabecalhoParaBase64 = async function (input) {
     const file = input.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function (event) {
-        const imagem = event.target.result;
+    try {
+        const imagem = await comprimirImagemCliente(file, 800, 400, 0.75);
         document.getElementById('fundo-cabecalho-base64').value = imagem;
         const preview = document.getElementById('preview-fundo-cabecalho');
         if (preview) {
             preview.src = imagem;
             preview.style.display = 'block';
         }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+        console.error('Erro ao processar imagem de fundo:', err);
+    }
 };
 
 window.salvarIdentidadeVisual = function () {
@@ -1215,20 +1320,33 @@ function carregarListaAdicionaisAdmin() {
     });
 }
 
-window.converterImagemParaBase64 = function (input) {
+window.converterImagemParaBase64 = async function (input) {
     const file = input.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const base64String = e.target.result;
-            document.getElementById('prod-foto').value = base64String;
+        try {
+            // Comprime a foto do produto antes de salvar no banco (max 500x500px, 75% qualidade)
+            const base64Otimizado = await comprimirImagemCliente(file, 500, 500, 0.75);
+            document.getElementById('prod-foto').value = base64Otimizado;
             const preview = document.getElementById('preview-foto');
             if (preview) {
-                preview.src = base64String;
+                preview.src = base64Otimizado;
                 preview.style.display = 'block';
             }
-        };
-        reader.readAsDataURL(file);
+        } catch (err) {
+            console.error('Erro ao comprimir imagem do produto:', err);
+            // Fallback para FileReader padrão caso dê algum erro
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const base64String = e.target.result;
+                document.getElementById('prod-foto').value = base64String;
+                const preview = document.getElementById('preview-foto');
+                if (preview) {
+                    preview.src = base64String;
+                    preview.style.display = 'block';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
     }
 };
 
