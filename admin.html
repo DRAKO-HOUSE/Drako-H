@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Painel do Restaurante - DRAKO HOUSE</title>
+  <meta name="theme-color" content="#2e5902">
+  <link rel="icon" href="./assets/logo.jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="adm-body">
+
+  <!-- LOGIN -->
+  <main id="tela-login" class="adm-login" hidden>
+    <form id="form-login" class="adm-card" novalidate>
+      <img src="./assets/logo.jpeg" alt="Logo DRAKO HOUSE" class="adm-logo">
+      <h1>Acesso do Restaurante</h1>
+      <label for="login-email">E-mail</label>
+      <input type="email" id="login-email" class="form-input" autocomplete="username" required>
+      <label for="login-senha">Senha</label>
+      <input type="password" id="login-senha" class="form-input" autocomplete="current-password" required>
+      <p id="login-erro" class="adm-erro" role="alert" hidden></p>
+      <button type="submit" class="btn-confirmar-adicao adm-btn-cheio">Entrar</button>
+      <a href="index.html" class="adm-link">← Voltar ao cardápio</a>
+    </form>
+  </main>
+
+  <!-- PAINEL -->
+  <div id="tela-painel" hidden>
+    <header class="adm-topo">
+      <strong>🔒 Painel DRAKO HOUSE</strong>
+      <span class="adm-topo-email" id="email-logado"></span>
+      <a href="index.html" class="btn-secundario adm-btn-peq">Voltar ao cardápio</a>
+      <button type="button" id="btn-sair" class="btn-secundario adm-btn-peq">Sair</button>
+    </header>
+
+    <nav class="adm-abas" role="tablist" aria-label="Seções do painel">
+      <button type="button" role="tab" class="admin-tab-btn ativo" data-aba="pedidos">Pedidos <span id="badge-novos" class="adm-badge" hidden>0</span></button>
+      <button type="button" role="tab" class="admin-tab-btn" data-aba="produtos">Produtos</button>
+      <button type="button" role="tab" class="admin-tab-btn" data-aba="adicionais">Adicionais</button>
+      <button type="button" role="tab" class="admin-tab-btn" data-aba="categorias">Categorias</button>
+      <button type="button" role="tab" class="admin-tab-btn" data-aba="bairros">Bairros e taxas</button>
+      <button type="button" role="tab" class="admin-tab-btn" data-aba="config">Configurações</button>
+      <button type="button" role="tab" class="admin-tab-btn" data-aba="impressora">Impressora</button>
+    </nav>
+
+    <main class="adm-conteudo">
+      <!-- PEDIDOS -->
+      <section id="aba-pedidos" data-aba-conteudo>
+        <div id="lista-pedidos" class="adm-lista" aria-live="polite"><p class="adm-vazio">Carregando pedidos...</p></div>
+      </section>
+
+      <!-- PRODUTOS -->
+      <section id="aba-produtos" data-aba-conteudo hidden>
+        <form id="form-produto" class="adm-card adm-form" novalidate>
+          <h2 id="titulo-produto">Novo produto</h2>
+          <input type="hidden" id="prod-id">
+          <label for="prod-nome">Nome</label>
+          <input type="text" id="prod-nome" class="form-input" maxlength="80" required>
+          <label for="prod-desc">Descrição</label>
+          <textarea id="prod-desc" class="form-input" rows="2" maxlength="300"></textarea>
+          <label for="prod-categoria">Categoria</label>
+          <select id="prod-categoria" class="form-select" required></select>
+          <div class="adm-linha">
+            <div><label for="prod-preco-m" id="rotulo-preco-m">Preço (R$)</label>
+              <input type="number" id="prod-preco-m" class="form-input" step="0.01" min="0" required></div>
+            <div id="grupo-preco-g"><label for="prod-preco-g">Preço G (R$)</label>
+              <input type="number" id="prod-preco-g" class="form-input" step="0.01" min="0"></div>
+            <div id="grupo-sabores"><label for="prod-sabores">Qtd. de sabores</label>
+              <input type="number" id="prod-sabores" class="form-input" min="1" max="10" value="2"></div>
+          </div>
+          <label for="prod-foto">Imagem</label>
+          <input type="file" id="prod-foto" accept="image/*" class="form-input">
+          <img id="prod-preview" class="adm-preview" alt="Prévia da imagem" hidden>
+          <label class="adm-check"><input type="checkbox" id="prod-disponivel" checked> Disponível no cardápio</label>
+          <label class="adm-check"><input type="checkbox" id="prod-destaque"> Mostrar em Destaques</label>
+          <div class="adm-acoes">
+            <button type="submit" class="btn-confirmar-adicao">Salvar produto</button>
+            <button type="button" id="btn-cancelar-produto" class="btn-secundario" hidden>Cancelar edição</button>
+          </div>
+        </form>
+        <div id="lista-produtos" class="adm-lista"></div>
+      </section>
+
+      <!-- ADICIONAIS -->
+      <section id="aba-adicionais" data-aba-conteudo hidden>
+        <form id="form-adicional" class="adm-card adm-form" novalidate>
+          <h2 id="titulo-adicional">Novo adicional</h2>
+          <input type="hidden" id="add-id">
+          <div class="adm-linha">
+            <div><label for="add-nome">Nome</label><input type="text" id="add-nome" class="form-input" maxlength="60" required></div>
+            <div><label for="add-preco">Preço (R$)</label><input type="number" id="add-preco" class="form-input" step="0.01" min="0" required></div>
+          </div>
+          <div class="adm-acoes">
+            <button type="submit" class="btn-confirmar-adicao">Salvar adicional</button>
+            <button type="button" id="btn-cancelar-adicional" class="btn-secundario" hidden>Cancelar edição</button>
+          </div>
+        </form>
+        <div id="lista-adicionais" class="adm-lista"></div>
+      </section>
+
+      <!-- CATEGORIAS -->
+      <section id="aba-categorias" data-aba-conteudo hidden>
+        <form id="form-categoria" class="adm-card adm-form" novalidate>
+          <h2 id="titulo-categoria">Nova categoria</h2>
+          <input type="hidden" id="cat-id">
+          <div class="adm-linha">
+            <div><label for="cat-nome">Nome (menu)</label><input type="text" id="cat-nome" class="form-input" maxlength="40" required></div>
+            <div><label for="cat-icone">Ícone (emoji)</label><input type="text" id="cat-icone" class="form-input" maxlength="8"></div>
+          </div>
+          <label for="cat-titulo">Título da seção (opcional)</label>
+          <input type="text" id="cat-titulo" class="form-input" maxlength="60">
+          <label for="cat-tipo">Como os produtos funcionam</label>
+          <select id="cat-tipo" class="form-select">
+            <option value="batatas">Tamanhos M/G + adicionais</option>
+            <option value="combos">Combo com sabores</option>
+            <option value="simples">Preço único</option>
+          </select>
+          <div class="adm-acoes">
+            <button type="submit" class="btn-confirmar-adicao">Salvar categoria</button>
+            <button type="button" id="btn-cancelar-categoria" class="btn-secundario" hidden>Cancelar edição</button>
+          </div>
+        </form>
+        <p class="adm-dica">Use ▲ ▼ para mudar a ordem em que as categorias aparecem no cardápio.</p>
+        <div id="lista-categorias" class="adm-lista"></div>
+      </section>
+
+      <!-- BAIRROS E TAXAS -->
+      <section id="aba-bairros" data-aba-conteudo hidden>
+        <form id="form-entrega" class="adm-card adm-form" novalidate>
+          <h2>Taxa de entrega</h2>
+          <label class="adm-check"><input type="radio" name="modo-taxa" value="bairro"> Taxa por bairro</label>
+          <label class="adm-check"><input type="radio" name="modo-taxa" value="unica"> Taxa única</label>
+          <label class="adm-check"><input type="radio" name="modo-taxa" value="sem"> Sem taxa de entrega</label>
+          <div id="grupo-taxa-unica">
+            <label for="taxa-unica">Valor da taxa única (R$)</label>
+            <input type="number" id="taxa-unica" class="form-input" step="0.01" min="0" value="0">
+          </div>
+          <button type="submit" class="btn-confirmar-adicao">Salvar taxa de entrega</button>
+        </form>
+        <form id="form-bairro" class="adm-card adm-form" novalidate>
+          <h2 id="titulo-bairro">Novo bairro</h2>
+          <input type="hidden" id="bairro-id">
+          <div class="adm-linha">
+            <div><label for="bairro-nome">Bairro</label><input type="text" id="bairro-nome" class="form-input" maxlength="60" required></div>
+            <div><label for="bairro-taxa">Taxa (R$)</label><input type="number" id="bairro-taxa" class="form-input" step="0.01" min="0" required></div>
+          </div>
+          <p class="adm-dica">R$ 0,00 = entrega grátis nesse bairro.</p>
+          <div class="adm-acoes">
+            <button type="submit" class="btn-confirmar-adicao">Salvar bairro</button>
+            <button type="button" id="btn-cancelar-bairro" class="btn-secundario" hidden>Cancelar edição</button>
+          </div>
+        </form>
+        <div id="lista-bairros" class="adm-lista"></div>
+      </section>
+
+      <!-- CONFIGURAÇÕES -->
+      <section id="aba-config" data-aba-conteudo hidden>
+        <div class="adm-card adm-form">
+          <h2>Loja</h2>
+          <label class="adm-check"><input type="checkbox" id="loja-aberta"> Loja aberta para pedidos</label>
+        </div>
+        <form id="form-config" class="adm-card adm-form" novalidate>
+          <h2>Dados do restaurante</h2>
+          <label for="cfg-nome">Nome do restaurante</label>
+          <input type="text" id="cfg-nome" class="form-input" maxlength="60" required>
+          <label for="cfg-whatsapp">WhatsApp para receber pedidos (com DDD)</label>
+          <input type="tel" id="cfg-whatsapp" class="form-input" inputmode="numeric" placeholder="74999998888" required>
+          <label for="cfg-horario">Horário de funcionamento (aparece no cardápio)</label>
+          <input type="text" id="cfg-horario" class="form-input" maxlength="120" placeholder="Seg a Dom, 18h às 23h">
+          <label for="cfg-mensagem">Mensagem final do pedido no WhatsApp</label>
+          <input type="text" id="cfg-mensagem" class="form-input" maxlength="200">
+          <button type="submit" class="btn-confirmar-adicao">Salvar configurações</button>
+        </form>
+      </section>
+
+      <!-- IMPRESSORA -->
+      <section id="aba-impressora" data-aba-conteudo hidden>
+        <div class="adm-card adm-form">
+          <h2>Impressora Bluetooth</h2>
+          <p id="aviso-bluetooth" class="adm-erro" hidden></p>
+          <p>Status: <strong id="status-impressora">Desconectada</strong></p>
+          <div class="adm-acoes">
+            <button type="button" id="btn-conectar" class="btn-confirmar-adicao">Conectar impressora</button>
+            <button type="button" id="btn-desconectar" class="btn-secundario" hidden>Desconectar</button>
+          </div>
+          <label for="largura-papel">Largura do papel</label>
+          <select id="largura-papel" class="form-select">
+            <option value="32">58 mm (32 colunas)</option>
+            <option value="48">80 mm (48 colunas)</option>
+          </select>
+          <label class="adm-check"><input type="checkbox" id="impressao-auto"> Imprimir automaticamente pedidos novos</label>
+          <p class="adm-dica">A impressão automática só funciona com esta página aberta e a impressora conectada.</p>
+          <div class="adm-acoes">
+            <button type="button" id="btn-teste" class="btn-secundario">Imprimir teste</button>
+            <button type="button" id="btn-teste-navegador" class="btn-secundario">Imprimir pelo navegador</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast-aviso" class="toast-aviso" role="status" aria-live="polite"></div>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

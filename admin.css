@@ -1,0 +1,60 @@
+/* Estilos exclusivos do painel. Cores e componentes vêm do style.css (mesmo visual do cardápio). */
+.adm-body { background: var(--cinza-fundo); min-height: 100vh; padding-bottom: 80px; }
+[hidden] { display: none !important; }
+.adm-login { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+.adm-card { background: var(--superficie-card); border-radius: var(--raio-card); box-shadow: var(--sombra-card); padding: 18px; margin-bottom: 14px; }
+.adm-login .adm-card { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 8px; }
+.adm-logo { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; align-self: center; }
+.adm-login h1 { font-size: 1.15rem; text-align: center; margin-bottom: 6px; }
+.adm-body label { font-size: 0.85rem; font-weight: 600; display: block; margin: 8px 0 4px; }
+.adm-body input:focus-visible, .adm-body select:focus-visible, .adm-body textarea:focus-visible,
+.adm-body button:focus-visible, .adm-body a:focus-visible { outline: 3px solid var(--borda-foco); outline-offset: 2px; }
+.adm-btn-cheio { width: 100%; justify-content: center; margin-top: 10px; }
+.adm-btn-peq { padding: 8px 14px; font-size: 0.85rem; width: auto; text-decoration: none; }
+.adm-link { text-align: center; font-size: 0.85rem; color: var(--texto-mutado); margin-top: 6px; }
+.adm-erro { color: #b91c1c; background: #fee2e2; padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; }
+
+.adm-topo { background: var(--vermelho-escuro); color: #fff; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; }
+.adm-topo-email { flex: 1; font-size: 0.8rem; opacity: 0.85; min-width: 120px; }
+.adm-abas { display: flex; gap: 6px; overflow-x: auto; padding: 10px 12px; background: #fff; position: sticky; top: 0; z-index: 5; box-shadow: var(--sombra-card); }
+.adm-abas .admin-tab-btn { flex: 0 0 auto; min-height: 44px; }
+.adm-badge { background: #dc2626; color: #fff; border-radius: 20px; padding: 1px 8px; font-size: 0.75rem; margin-left: 4px; }
+.adm-conteudo { max-width: 960px; margin: 0 auto; padding: 14px 12px; }
+
+.adm-form h2 { font-size: 1.05rem; margin-bottom: 6px; }
+.adm-linha { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.adm-check { display: flex !important; align-items: center; gap: 10px; min-height: 44px; font-weight: 500 !important; }
+.adm-check input { width: 22px; height: 22px; }
+.adm-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.adm-acoes button { min-height: 44px; }
+.adm-dica, .adm-vazio { color: var(--texto-mutado); font-size: 0.85rem; margin: 6px 0; }
+.adm-preview { width: 90px; height: 90px; object-fit: cover; border-radius: 12px; margin-top: 8px; }
+
+.adm-lista { display: flex; flex-direction: column; gap: 10px; }
+.adm-item { background: #fff; border-radius: 14px; box-shadow: var(--sombra-card); padding: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.adm-item img { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; }
+.adm-item-info { flex: 1; min-width: 150px; }
+.adm-item-info small { color: var(--texto-mutado); display: block; }
+.adm-item .adm-acoes { margin: 0; }
+.adm-item button { min-height: 40px; padding: 6px 12px; border-radius: 10px; border: 1px solid var(--borda-suave); background: #fff; cursor: pointer; font-weight: 600; }
+.adm-item button.perigo { color: #b91c1c; border-color: #fecaca; }
+.adm-item button:disabled { opacity: 0.5; cursor: not-allowed; }
+.adm-pedido { display: block; }
+.adm-pedido-topo { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: center; }
+.adm-pedido ul { margin: 8px 0 8px 18px; font-size: 0.88rem; }
+.adm-status { padding: 3px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; background: #e5e7eb; }
+.adm-status[data-status="Novo"] { background: #fef3c7; color: #92400e; }
+.adm-status[data-status="Em preparo"] { background: #dbeafe; color: #1e40af; }
+.adm-status[data-status="Saiu para entrega"] { background: #ede9fe; color: #5b21b6; }
+.adm-status[data-status="Entregue"] { background: #dcfce7; color: #166534; }
+.adm-status[data-status="Cancelado"] { background: #fee2e2; color: #991b1b; }
+
+/* Cupom pelo navegador: aparece só na impressão, na largura do papel */
+#area-impressao { display: none; }
+@media print {
+  @page { margin: 0; }
+  body > *:not(#area-impressao) { display: none !important; }
+  #area-impressao { display: block; font-family: monospace; font-size: 12px; line-height: 1.25; white-space: pre-wrap; color: #000; padding: 2mm; }
+  #area-impressao.papel-58 { width: 58mm; }
+  #area-impressao.papel-80 { width: 80mm; }
+}

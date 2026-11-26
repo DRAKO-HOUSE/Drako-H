@@ -30,9 +30,15 @@
     <!-- Cabeçalho Principal -->
     <header class="main-header">
         <div class="header-content">
-            <div class="status-loja-pill" id="badge-status-loja">
-                <span class="status-dot" id="status-dot"></span>
-                <span id="texto-status-loja">Aberto para Pedidos</span>
+            <div class="header-pills">
+                <div class="status-loja-pill" id="badge-status-loja">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span id="texto-status-loja">Aberto para Pedidos</span>
+                </div>
+                <!-- Atalho para "Meus pedidos": só aparece depois que o cliente faz o primeiro pedido -->
+                <button type="button" class="status-loja-pill btn-meus-pedidos-pill" id="btn-meus-pedidos-topo" onclick="abrirMeusPedidos()" style="display: none;">
+                    📋 Meus pedidos
+                </button>
             </div>
 
             <img src="./assets/logo.jpeg" alt="Drako House Logo" class="logo" id="logo-empresa">
@@ -59,9 +65,7 @@
     <div class="menu-categorias-wrapper">
         <nav class="menu-categorias" id="nav-categorias">
             <a href="#destaques" id="link-nav-destaques" class="active">⭐ Destaques</a>
-            <a href="#batatas">🍟 Batatas</a>
-            <a href="#combos">🍔 Combos</a>
-            <a href="#bebidas">🥤 Bebidas</a>
+            <!-- Links das categorias são gerados pelo script.js a partir do Firebase (/categorias) -->
         </nav>
     </div>
 
@@ -95,62 +99,9 @@
             </div>
         </section>
 
-        <!-- Seção: Batatas -->
-        <section id="batatas" class="secao-categoria">
-            <div class="categoria-header">
-                <h2 class="categoria-titulo">🍟 Nossas Batatas</h2>
-                <span class="categoria-contador" id="contador-batatas">Porções M e G</span>
-            </div>
-            <div class="carrossel-wrapper">
-                <button class="btn-scroll-nav prev" onclick="rolarCarrossel('lista-batatas', -1)" aria-label="Rolar para a esquerda">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <div class="cardapio" id="lista-batatas">
-                    <!-- Cards dinâmicos -->
-                </div>
-                <button class="btn-scroll-nav next" onclick="rolarCarrossel('lista-batatas', 1)" aria-label="Rolar para a direita">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </button>
-            </div>
-        </section>
-
-        <!-- Seção: Combos -->
-        <section id="combos" class="secao-categoria">
-            <div class="categoria-header">
-                <h2 class="categoria-titulo">🍔 Combos Especiais</h2>
-                <span class="categoria-contador" id="contador-combos">Mais Econômicos</span>
-            </div>
-            <div class="carrossel-wrapper">
-                <button class="btn-scroll-nav prev" onclick="rolarCarrossel('lista-combos', -1)" aria-label="Rolar para a esquerda">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <div class="cardapio" id="lista-combos">
-                    <!-- Cards dinâmicos -->
-                </div>
-                <button class="btn-scroll-nav next" onclick="rolarCarrossel('lista-combos', 1)" aria-label="Rolar para a direita">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </button>
-            </div>
-        </section>
-
-        <!-- Seção: Bebidas -->
-        <section id="bebidas" class="secao-categoria">
-            <div class="categoria-header">
-                <h2 class="categoria-titulo">🥤 Bebidas Geladas</h2>
-                <span class="categoria-contador" id="contador-bebidas">Refrescantes</span>
-            </div>
-            <div class="carrossel-wrapper">
-                <button class="btn-scroll-nav prev" onclick="rolarCarrossel('lista-bebidas', -1)" aria-label="Rolar para a esquerda">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
-                <div class="cardapio" id="lista-bebidas">
-                    <!-- Cards dinâmicos -->
-                </div>
-                <button class="btn-scroll-nav next" onclick="rolarCarrossel('lista-bebidas', 1)" aria-label="Rolar para a direita">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </button>
-            </div>
-        </section>
+        <!-- Seções das categorias: geradas dinamicamente pelo script.js a partir do Firebase (/categorias).
+             Cada seção usa a mesma estrutura visual da seção de Destaques acima. -->
+        <div id="secoes-categorias"></div>
 
     </main>
 
@@ -158,9 +109,15 @@
     <footer class="site-footer">
         <p><strong>DRAKO HOUSE</strong> • Todos os direitos reservados</p>
         <p style="font-size: 0.8rem; margin-top: 4px;">Sua dose diária de felicidade em cada mordida.</p>
-        <button class="btn-acesso-admin" id="btn-abrir-admin" onclick="abrirModalAdmin()" title="Acesso Administrativo (Alt+A)">
-            <span>🔒 Acesso Restaurante</span>
-        </button>
+        <p id="horario-funcionamento" style="font-size: 0.8rem; margin-top: 4px;" hidden></p>
+        <div class="rodape-botoes">
+            <button class="btn-acesso-admin" id="btn-rodape-meus-pedidos" onclick="abrirMeusPedidos()" title="Ver o histórico dos seus pedidos">
+                <span>📋 Meus pedidos</span>
+            </button>
+            <button class="btn-acesso-admin" id="btn-abrir-admin" onclick="location.href='admin.html'" title="Acessar o painel do restaurante">
+                <span>🔒 Acessar o restaurante</span>
+            </button>
+        </div>
     </footer>
 
     <!-- Barra Flutuante de Carrinho (Padrão iFood / Delivery Apps) -->
@@ -301,9 +258,26 @@
                     <!-- Formulário de Entrega e Identificação -->
                     <div id="dados-entrega" class="form-entrega-secao">
                         <label class="form-label" for="nome-cliente">Seu Nome *</label>
-                        <input type="text" id="nome-cliente" class="form-input" placeholder="Como podemos te chamar?" required>
+                        <input type="text" id="nome-cliente" class="form-input" placeholder="Como podemos te chamar?" autocomplete="name" required>
+
+                        <label class="form-label" for="telefone-cliente">Telefone (WhatsApp) *</label>
+                        <input type="tel" id="telefone-cliente" class="form-input" placeholder="(74) 9 9999-9999" inputmode="tel" autocomplete="tel" maxlength="20" oninput="formatarCampoTelefone(this)">
 
                         <div id="grupo-campos-endereco">
+                            <!-- Cartão do endereço salvo (aparece quando o cliente já pediu antes neste aparelho) -->
+                            <div id="endereco-salvo-box" class="endereco-salvo-box" style="display: none;">
+                                <div class="endereco-salvo-info">
+                                    <span class="endereco-salvo-rotulo">📍 Entregar em:</span>
+                                    <strong id="endereco-salvo-linha1"></strong>
+                                    <span id="endereco-salvo-linha2"></span>
+                                </div>
+                                <div class="endereco-salvo-acoes">
+                                    <button type="button" class="btn-endereco-acao" onclick="editarEnderecoSalvo()">✏️ Editar</button>
+                                    <button type="button" class="btn-endereco-acao" onclick="usarOutroEndereco()">➕ Usar outro endereço</button>
+                                </div>
+                            </div>
+
+                            <div id="campos-endereco-detalhe">
                             <label class="form-label" for="endereco-cliente">Endereço de Entrega *</label>
                             <input type="text" id="endereco-cliente" class="form-input" placeholder="Rua / Avenida / Travessa">
 
@@ -314,33 +288,23 @@
                                 </div>
                                 <div style="flex: 1;">
                                     <label class="form-label" for="bairro">Bairro *</label>
+                                    <!-- Opções carregadas do Firebase (/bairros) pelo script.js -->
                                     <select id="bairro" onchange="calcularFrete()" class="form-select">
                                         <option value="" disabled selected>Selecione seu bairro...</option>
-                                        <option value="5">Agua Nova</option>
-                                        <option value="0">Centro</option>
-                                        <option value="0">Estação da Luiz</option>
-                                        <option value="0">Jardim Araújo</option>
-                                        <option value="0">Jardim Formosa</option>
-                                        <option value="0">José Mendes</option>
-                                        <option value="0">Nova Avenida</option>
-                                        <option value="0">Nova Morada</option>
-                                        <option value="0">Novo Oeste</option>
-                                        <option value="0">Oliveira</option>
-                                        <option value="0">Planaltino</option>
-                                        <option value="0">Sacramento</option>
-                                        <option value="0">São Luiz</option>
-                                        <option value="0">Vicente Ferreira</option>
                                     </select>
+                                    <!-- Usado só quando nenhum bairro está cadastrado no painel -->
+                                    <input type="text" id="bairro-texto" class="form-input" placeholder="Digite seu bairro" style="display: none;">
                                 </div>
-                            </div>
-
-                            <div id="exibicao-taxa" class="taxa-frete-box">
-                                <span id="texto-taxa"></span>
                             </div>
 
                             <div style="margin-top: 4px;">
                                 <label class="form-label" for="ponto-referencia">Ponto de Referência</label>
                                 <input type="text" id="ponto-referencia" class="form-input" placeholder="Ex: Próximo à padaria, casa com portão verde...">
+                            </div>
+                            </div><!-- /campos-endereco-detalhe -->
+
+                            <div id="exibicao-taxa" class="taxa-frete-box">
+                                <span id="texto-taxa"></span>
                             </div>
                         </div>
 
@@ -405,6 +369,30 @@
         </div>
     </div>
 
+    <!-- Modal "Meus pedidos" (histórico do cliente, identificado pelo telefone) -->
+    <div id="modal-meus-pedidos" class="modal-overlay bottom-sheet">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.3rem;">📋</span>
+                    <h3>Meus Pedidos</h3>
+                </div>
+                <button class="modal-btn-fechar" onclick="fecharMeusPedidos()" aria-label="Fechar">✕</button>
+            </div>
+            <div class="modal-corpo">
+                <label class="form-label" for="meus-pedidos-telefone" style="display: block; margin-bottom: 6px;">Seu telefone (WhatsApp):</label>
+                <div class="form-row" style="margin-bottom: 14px;">
+                    <input type="tel" id="meus-pedidos-telefone" class="form-input" placeholder="(74) 9 9999-9999" inputmode="tel" maxlength="20" oninput="formatarCampoTelefone(this)">
+                    <button type="button" class="btn-confirmar-adicao" style="flex: 0 0 auto;" onclick="renderizarMeusPedidos()">Ver</button>
+                </div>
+                <div id="lista-meus-pedidos" class="lista-pedidos"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso rápido (toast) -->
+    <div id="toast-aviso" class="toast-aviso" role="status" aria-live="polite"></div>
+
     <!-- Modal Administrativo (100% Compatível com Firebase) -->
     <div id="modal-admin" class="modal-overlay">
         <div class="modal-container" style="max-width: 600px;">
@@ -414,20 +402,109 @@
             </div>
 
             <div class="modal-corpo">
-                <!-- Login Admin -->
-                <div id="admin-login">
-                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">Digite a senha de administrador:</p>
-                    <input type="password" id="senha-admin" class="form-input" placeholder="Digite a senha" style="margin-bottom: 12px;">
-                    <button onclick="verificarSenha()" class="btn-confirmar-adicao" style="width: 100%; justify-content: center;">Entrar</button>
-                </div>
+                <!-- Login Admin (Firebase Authentication: e-mail e senha) -->
+                <form id="admin-login" onsubmit="event.preventDefault(); verificarSenha();">
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">Entre com o e-mail e a senha de administrador:</p>
+                    <input type="email" id="email-admin" class="form-input" placeholder="E-mail" autocomplete="username" style="margin-bottom: 8px;">
+                    <input type="password" id="senha-admin" class="form-input" placeholder="Senha" autocomplete="current-password" style="margin-bottom: 12px;">
+                    <p id="admin-login-erro" class="admin-aviso erro" style="display: none;"></p>
+                    <button type="submit" id="btn-entrar-admin" class="btn-confirmar-adicao" style="width: 100%; justify-content: center;">Entrar</button>
+                </form>
 
                 <!-- Controles Admin -->
                 <div id="admin-controles" style="display: none;">
+                    <div class="admin-sessao">
+                        <span>Conectado como <strong id="admin-email-logado"></strong></span>
+                        <button type="button" class="btn-admin-sair" onclick="sairAdmin()">Sair</button>
+                    </div>
                     <div class="admin-tabs">
                         <button type="button" class="admin-tab-btn ativo" onclick="alternarTabAdmin('produtos', this)">Produtos</button>
+                        <button type="button" class="admin-tab-btn" onclick="alternarTabAdmin('pedidos', this)">Pedidos <span id="badge-pedidos-novos" class="badge-tab" style="display: none;">0</span></button>
+                        <button type="button" class="admin-tab-btn" onclick="alternarTabAdmin('categorias', this)">Categorias</button>
+                        <button type="button" class="admin-tab-btn" onclick="alternarTabAdmin('entrega', this)">Entrega</button>
                         <button type="button" class="admin-tab-btn" onclick="alternarTabAdmin('adicionais', this)">Adicionais</button>
                         <button type="button" class="admin-tab-btn" onclick="alternarTabAdmin('visual', this)">Identidade Visual</button>
                         <button type="button" class="admin-tab-btn" onclick="alternarTabAdmin('loja', this)">Status Loja</button>
+                    </div>
+
+                    <!-- Tab: Pedidos (tempo real) -->
+                    <div id="tab-conteudo-pedidos" class="tab-conteudo" style="display: none;">
+                        <div class="admin-pedidos-filtros">
+                            <label for="filtro-status-pedidos" class="form-label" style="margin: 0;">Mostrar:</label>
+                            <select id="filtro-status-pedidos" class="form-select" onchange="renderizarPedidosAdmin()">
+                                <option value="ativos" selected>Em andamento</option>
+                                <option value="todos">Todos</option>
+                                <option value="Novo">Novo</option>
+                                <option value="Em preparo">Em preparo</option>
+                                <option value="Saiu para entrega">Saiu para entrega</option>
+                                <option value="Entregue">Entregue</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div id="lista-pedidos-admin" class="lista-pedidos">
+                            <p class="admin-vazio">Carregando pedidos...</p>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Categorias -->
+                    <div id="tab-conteudo-categorias" class="tab-conteudo" style="display: none;">
+                        <div class="admin-form-box">
+                            <input type="hidden" id="cat-id">
+                            <div class="form-row" style="margin-bottom: 8px;">
+                                <input type="text" id="cat-icone" placeholder="🍟" maxlength="4" class="form-input" style="flex: 0 0 64px; text-align: center;" aria-label="Emoji da categoria">
+                                <input type="text" id="cat-nome" placeholder="Nome no menu (ex: Batatas)" maxlength="40" class="form-input">
+                            </div>
+                            <input type="text" id="cat-titulo" placeholder="Título da seção (opcional, ex: Nossas Batatas)" maxlength="60" class="form-input" style="margin-bottom: 8px;">
+                            <label class="form-label" for="cat-tipo" style="display: block; margin-bottom: 4px;">Como os produtos dessa categoria funcionam:</label>
+                            <select id="cat-tipo" class="form-select" style="margin-bottom: 8px;">
+                                <option value="batatas">Tamanhos M e G + adicionais (como as batatas)</option>
+                                <option value="combos">Combo com escolha de sabores</option>
+                                <option value="simples" selected>Preço único (como as bebidas)</option>
+                            </select>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" onclick="salvarCategoriaFirebase()" id="btn-salvar-categoria" class="btn-confirmar-adicao" style="flex: 1; justify-content: center;">Salvar Categoria</button>
+                                <button type="button" onclick="limparFormularioCategoria()" class="btn-secundario" id="btn-cancelar-categoria" style="display: none;">Cancelar</button>
+                            </div>
+                        </div>
+                        <p class="admin-dica">Use ▲ ▼ para mudar a ordem em que as categorias aparecem no cardápio.</p>
+                        <div id="lista-categorias-admin"></div>
+                    </div>
+
+                    <!-- Tab: Taxa de Entrega e Bairros -->
+                    <div id="tab-conteudo-entrega" class="tab-conteudo" style="display: none;">
+                        <div class="admin-form-box">
+                            <label class="admin-switch">
+                                <input type="checkbox" id="entrega-cobrar-taxa" onchange="atualizarFormularioEntregaAdmin()">
+                                <span>Cobrar taxa de entrega</span>
+                            </label>
+
+                            <div id="entrega-opcoes-taxa" style="margin-top: 12px;">
+                                <div class="tipo-entrega-tabs" style="margin-bottom: 10px;">
+                                    <button type="button" id="entrega-modo-unica" class="tipo-entrega-btn" onclick="selecionarModoTaxa('unica')">Taxa única</button>
+                                    <button type="button" id="entrega-modo-bairro" class="tipo-entrega-btn" onclick="selecionarModoTaxa('bairro')">Taxa por bairro</button>
+                                </div>
+                                <div id="entrega-campo-taxa-unica">
+                                    <label class="form-label" for="entrega-taxa-unica" style="display: block; margin-bottom: 4px;">Valor da taxa para todos os bairros (R$):</label>
+                                    <input type="number" step="0.01" min="0" id="entrega-taxa-unica" class="form-input" placeholder="Ex: 5,00">
+                                </div>
+                            </div>
+                            <button type="button" onclick="salvarConfigEntrega()" class="btn-confirmar-adicao" style="width: 100%; justify-content: center; margin-top: 12px;">Salvar Configuração de Entrega</button>
+                        </div>
+
+                        <div class="admin-form-box">
+                            <p class="admin-subtitulo">Bairros atendidos</p>
+                            <p class="admin-dica" id="entrega-dica-bairros" style="margin-top: 0;">O cliente escolhe o bairro numa lista no checkout. Use R$ 0,00 para entrega grátis.</p>
+                            <input type="hidden" id="bairro-id-edicao">
+                            <div class="form-row" style="margin-bottom: 8px;">
+                                <input type="text" id="bairro-nome-admin" placeholder="Nome do bairro" maxlength="60" class="form-input">
+                                <input type="number" step="0.01" min="0" id="bairro-taxa-admin" placeholder="Taxa R$" class="form-input" style="flex: 0 0 110px;">
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" onclick="salvarBairroFirebase()" id="btn-salvar-bairro" class="btn-confirmar-adicao" style="flex: 1; justify-content: center;">Adicionar Bairro</button>
+                                <button type="button" onclick="limparFormularioBairro()" class="btn-secundario" id="btn-cancelar-bairro" style="display: none;">Cancelar</button>
+                            </div>
+                        </div>
+                        <div id="lista-bairros-admin"></div>
                     </div>
 
                     <!-- Tab: Status da Loja -->
@@ -524,10 +601,9 @@
                             <input type="hidden" id="prod-foto">
                             <img id="preview-foto" src="" style="max-width: 80px; max-height: 80px; display: none; margin-bottom: 8px; border-radius: 8px; object-fit: cover;" alt="Preview">
 
-                            <select id="prod-categoria" class="form-select" style="margin-bottom:8px;">
-                                <option value="batatas">Batatas (Com Tamanhos M e G)</option>
-                                <option value="combos">Combos (Preço Único + Escolha de Sabores)</option>
-                                <option value="bebidas">Bebidas (Preço Único)</option>
+                            <!-- Opções geradas a partir das categorias cadastradas (aba Categorias) -->
+                            <select id="prod-categoria" class="form-select" style="margin-bottom:8px;" onchange="atualizarCamposProdutoPorCategoria()">
+                                <option value="batatas">Batatas</option>
                             </select>
                             <select id="prod-qtd-sabores" class="form-select" style="margin-bottom:8px;">
                                 <option value="2">Combo: Escolher 2 Sabores (Padrão)</option>
@@ -537,7 +613,10 @@
                                 <input type="number" step="0.01" id="prod-preco-m" placeholder="Preço M (ou Único)" class="form-input">
                                 <input type="number" step="0.01" id="prod-preco-g" placeholder="Preço G (Opcional)" class="form-input">
                             </div>
-                            <button onclick="salvarProdutoFirebase()" class="btn-confirmar-adicao" style="width:100%; justify-content:center;">Salvar Produto</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="salvarProdutoFirebase()" class="btn-confirmar-adicao" style="flex: 1; justify-content:center;">Salvar Produto</button>
+                                <button type="button" onclick="limparFormularioProduto()" class="btn-secundario" id="btn-cancelar-produto" style="display: none;">Cancelar</button>
+                            </div>
                         </div>
 
                         <div id="lista-produtos-admin" style="max-height: 250px; overflow-y: auto;">
@@ -569,16 +648,17 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            authDomain: "afiliados-e32b5.firebaseapp.com",
-            databaseURL: "https://afiliados-e32b5-default-rtdb.firebaseio.com",
-            projectId: "afiliados-e32b5",
-            storageBucket: "afiliados-e32b5.appspot.com",
-            messagingSenderId: "36735515286",
-            appId: "1:36735515286:web:..."
+            apiKey: "AIzaSyA9HTcZnV4w0ucqBEGcNCCdZU9lrCsPrMU",
+            authDomain: "drako-house.firebaseapp.com",
+            databaseURL: "https://drako-house-default-rtdb.firebaseio.com",
+            projectId: "drako-house",
+            storageBucket: "drako-house.firebasestorage.app",
+            messagingSenderId: "354312625669",
+            appId: "1:354312625669:web:b57956572f44cca754466c"
         };
         firebase.initializeApp(firebaseConfig);
     </script>
