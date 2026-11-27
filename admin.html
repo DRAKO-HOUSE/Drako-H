@@ -43,6 +43,7 @@
       <button type="button" role="tab" class="admin-tab-btn" data-aba="adicionais">Adicionais</button>
       <button type="button" role="tab" class="admin-tab-btn" data-aba="categorias">Categorias</button>
       <button type="button" role="tab" class="admin-tab-btn" data-aba="bairros">Bairros e taxas</button>
+      <button type="button" role="tab" class="admin-tab-btn" data-aba="aparencia">🎨 Aparência</button>
       <button type="button" role="tab" class="admin-tab-btn" data-aba="config">Configurações</button>
       <button type="button" role="tab" class="admin-tab-btn" data-aba="impressora">Impressora</button>
     </nav>
@@ -155,6 +156,226 @@
           </div>
         </form>
         <div id="lista-bairros" class="adm-lista"></div>
+      </section>
+
+      <!-- APARÊNCIA -->
+      <section id="aba-aparencia" data-aba-conteudo hidden>
+        <!-- Barra de Ações Fixa no Topo da Aba -->
+        <div class="adm-card adm-aparencia-topo">
+          <div>
+            <h2 style="margin: 0; font-size: 1.2rem;">🎨 Personalização da Identidade Visual</h2>
+            <p class="adm-dica" style="margin: 4px 0 0;">As alterações são visualizadas no mockup ao vivo e sincronizam em tempo real com o site do cliente.</p>
+          </div>
+          <div class="adm-acoes" style="margin: 0;">
+            <button type="button" id="btn-restaurar-padrao" class="btn-secundario">Restaurar padrão</button>
+            <button type="button" id="btn-descartar-aparencia" class="btn-secundario" disabled>Descartar</button>
+            <button type="button" id="btn-salvar-aparencia" class="btn-confirmar-adicao" disabled>Salvar alterações</button>
+          </div>
+        </div>
+
+        <div class="adm-aparencia-layout">
+          <!-- Editor com Sub-abas -->
+          <div class="adm-aparencia-editor">
+            <!-- Navegação de Sub-abas -->
+            <div class="sub-abas-nav" role="tablist" aria-label="Seções de aparência">
+              <button type="button" class="sub-aba-btn ativo" data-subaba="cores" role="tab" aria-selected="true">🎨 Cores</button>
+              <button type="button" class="sub-aba-btn" data-subaba="tema" role="tab" aria-selected="false">🌓 Tema</button>
+              <button type="button" class="sub-aba-btn" data-subaba="logo" role="tab" aria-selected="false">🖼️ Logo</button>
+              <button type="button" class="sub-aba-btn" data-subaba="cabecalho" role="tab" aria-selected="false">🏷️ Cabeçalho</button>
+              <button type="button" class="sub-aba-btn" data-subaba="historico" role="tab" aria-selected="false">📜 Histórico</button>
+            </div>
+
+            <!-- Sub-aba 1: Cores -->
+            <div id="subaba-cores" data-subaba-conteudo class="adm-card adm-form">
+              <h3>Paletas Prontas</h3>
+              <p class="adm-dica">Selecione uma paleta profissional pré-configurada ou personalize os tons abaixo.</p>
+              <div id="grade-paletas" class="grade-paletas"></div>
+
+              <hr class="adm-divisor">
+
+              <h3>Paleta Personalizada</h3>
+              <div id="aviso-contraste-wcag" class="adm-aviso-contraste" hidden role="alert"></div>
+
+              <div class="adm-grade-cores">
+                <div class="item-cor-pick">
+                  <label for="cor-primaria-pick">Cor Primária (Botões, destaques)</label>
+                  <div class="input-cor-wrapper">
+                    <input type="color" id="cor-primaria-pick" value="#516e03">
+                    <input type="text" id="cor-primaria-hex" class="form-input" value="#516E03" maxlength="7" spellcheck="false">
+                  </div>
+                </div>
+
+                <div class="item-cor-pick">
+                  <label for="cor-secundaria-pick">Cor Secundária (Cabeçalho, fundos escuros)</label>
+                  <div class="input-cor-wrapper">
+                    <input type="color" id="cor-secundaria-pick" value="#2e5902">
+                    <input type="text" id="cor-secundaria-hex" class="form-input" value="#2E5902" maxlength="7" spellcheck="false">
+                  </div>
+                </div>
+
+                <div class="item-cor-pick">
+                  <label for="cor-destaque-pick">Cor de Destaque (Badges, tags)</label>
+                  <div class="input-cor-wrapper">
+                    <input type="color" id="cor-destaque-pick" value="#f2f2f2">
+                    <input type="text" id="cor-destaque-hex" class="form-input" value="#F2F2F2" maxlength="7" spellcheck="false">
+                  </div>
+                </div>
+
+                <div class="item-cor-pick">
+                  <label for="cor-fundo-pick">Cor de Fundo da Página (Modo Claro)</label>
+                  <div class="input-cor-wrapper">
+                    <input type="color" id="cor-fundo-pick" value="#f4f5f8">
+                    <input type="text" id="cor-fundo-hex" class="form-input" value="#F4F5F8" maxlength="7" spellcheck="false">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sub-aba 2: Tema -->
+            <div id="subaba-tema" data-subaba-conteudo class="adm-card adm-form" hidden>
+              <h3>Esquema de Tema</h3>
+              <p class="adm-dica">Defina como o cardápio se comporta em relação a luz e escuridão de tela.</p>
+              
+              <div class="seletor-segmentado" role="group" aria-label="Escolha de Tema">
+                <button type="button" class="btn-segmentado ativo" data-opcao-tema="claro" aria-pressed="true">☀️ Claro</button>
+                <button type="button" class="btn-segmentado" data-opcao-tema="escuro" aria-pressed="false">🌙 Escuro</button>
+                <button type="button" class="btn-segmentado" data-opcao-tema="auto" aria-pressed="false">🖥️ Automático</button>
+              </div>
+
+              <div class="adm-card" style="margin-top: 16px; background: #fdfdfd; border: 1px solid var(--borda-suave);">
+                <h4>🎨 Modo Escuro de Alto Nível</h4>
+                <p class="adm-dica">O modo escuro do Drako House utiliza superfícies em camadas (#0f172a e #1e293b), contraste balanceado e bordas sutis com opacidade controlada, evitando fadiga visual.</p>
+              </div>
+            </div>
+
+            <!-- Sub-aba 3: Logo -->
+            <div id="subaba-logo" data-subaba-conteudo class="adm-card adm-form" hidden>
+              <h3>Logomarca do Restaurante</h3>
+              <p class="adm-dica">Envie a imagem da logomarca (PNG, JPG, WebP ou SVG). Dimensão recomendada: até 400x400 px.</p>
+
+              <div id="dropzone-logo" class="dropzone-area" role="button" tabindex="0">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <p><strong>Clique para selecionar</strong> ou arraste a imagem aqui</p>
+                <small>PNG, JPG, WebP ou SVG (máx. 300 KB otimizado)</small>
+                <input type="file" id="input-logo-file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+              </div>
+
+              <div class="logo-preview-linha">
+                <img id="preview-logo-admin" src="./assets/logo.jpeg" alt="Logo atual" class="preview-logo-circulo">
+                <div style="flex: 1;">
+                  <label for="slider-largura-logo">Tamanho da Logo: <span id="valor-largura-logo">84px</span></label>
+                  <input type="range" id="slider-largura-logo" min="48" max="140" value="84" class="form-range">
+                </div>
+                <button type="button" id="btn-remover-logo" class="btn-secundario perigo adm-btn-peq">Remover logo</button>
+              </div>
+            </div>
+
+            <!-- Sub-aba 4: Cabeçalho -->
+            <div id="subaba-cabecalho" data-subaba-conteudo class="adm-card adm-form" hidden>
+              <h3>Estilo do Fundo do Cabeçalho</h3>
+              <p class="adm-dica">Escolha como o topo do cardápio será preenchido.</p>
+
+              <div class="seletor-segmentado" role="group" aria-label="Tipo de cabeçalho">
+                <button type="button" class="btn-segmentado ativo" data-tipo-cabecalho="cor" aria-pressed="true">Cor Sólida</button>
+                <button type="button" class="btn-segmentado" data-tipo-cabecalho="gradiente" aria-pressed="false">Gradiente</button>
+                <button type="button" class="btn-segmentado" data-tipo-cabecalho="imagem" aria-pressed="false">Imagem</button>
+              </div>
+
+              <!-- Painel Cor -->
+              <div id="painel-cabecalho-cor" style="margin-top: 14px;">
+                <label for="cab-cor-pick">Cor do Cabeçalho</label>
+                <input type="color" id="cab-cor-pick" value="#2e5902" style="width: 100%; height: 42px; border: none; cursor: pointer; border-radius: 8px;">
+              </div>
+
+              <!-- Painel Gradiente -->
+              <div id="painel-cabecalho-gradiente" style="margin-top: 14px;" hidden>
+                <label>Selecione um Estilo de Gradiente:</label>
+                <div class="grade-gradientes">
+                  <button type="button" class="btn-grad-preset" data-preset-grad="linear-gradient(135deg, #2e5902 0%, #516e03 100%)" style="background: linear-gradient(135deg, #2e5902 0%, #516e03 100%);">Drako Militar</button>
+                  <button type="button" class="btn-grad-preset" data-preset-grad="linear-gradient(135deg, #1f2937 0%, #dc2626 100%)" style="background: linear-gradient(135deg, #1f2937 0%, #dc2626 100%);">Fogo Noturno</button>
+                  <button type="button" class="btn-grad-preset" data-preset-grad="linear-gradient(135deg, #0f172a 0%, #3b82f6 100%)" style="background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);">Azul Profundo</button>
+                  <button type="button" class="btn-grad-preset" data-preset-grad="linear-gradient(135deg, #451a03 0%, #d97706 100%)" style="background: linear-gradient(135deg, #451a03 0%, #d97706 100%);">Dourado Tostado</button>
+                </div>
+              </div>
+
+              <!-- Painel Imagem -->
+              <div id="painel-cabecalho-imagem" style="margin-top: 14px;" hidden>
+                <label for="input-cab-imagem">Foto de Fundo (banner)</label>
+                <input type="file" id="input-cab-imagem" accept="image/png,image/jpeg,image/webp" class="form-input">
+                <p class="adm-dica">Comprimida automaticamente no navegador (máx. 800 px).</p>
+              </div>
+
+              <div style="margin-top: 16px;">
+                <label for="cab-escurecimento-slider">Camada de Escurecimento (Overlay): <span id="valor-escurecimento">40%</span></label>
+                <input type="range" id="cab-escurecimento-slider" min="0" max="85" value="40" class="form-range">
+                <p class="adm-dica">Garante contraste com o texto do restaurante e da logomarca sobre a imagem ou gradiente.</p>
+              </div>
+
+              <div style="margin-top: 12px;">
+                <button type="button" id="btn-remover-fundo-cab" class="btn-secundario adm-btn-peq">Restaurar cabeçalho padrão</button>
+              </div>
+            </div>
+
+            <!-- Sub-aba 5: Histórico -->
+            <div id="subaba-historico" data-subaba-conteudo class="adm-card adm-form" hidden>
+              <h3>Histórico de Versões (Últimas 10)</h3>
+              <p class="adm-dica">Caso precise voltar atrás, você pode inspecionar e restaurar qualquer uma das últimas 10 publicações.</p>
+              <div id="lista-historico-aparencia" class="adm-lista">
+                <p class="adm-vazio">Carregando histórico...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mockup Mobile ao Vivo (Sticky) -->
+          <aside class="adm-aparencia-preview-coluna">
+            <div class="mockup-sticky-wrapper">
+              <span class="badge-mockup-topo">📱 Pré-visualização ao Vivo</span>
+              <div class="mockup-moldura-mobile">
+                <div class="mockup-camera-notch"></div>
+                <div id="mockup-preview-conteudo" class="mockup-tela-conteudo">
+                  <!-- Topo do Cardápio Simulador -->
+                  <div class="mockup-header">
+                    <div class="mockup-pill-status">🟢 Aberto para pedidos</div>
+                    <img src="./assets/logo.jpeg" alt="Logo preview" class="mockup-logo">
+                    <h4 class="mockup-titulo">DRAKO HOUSE</h4>
+                    <p class="mockup-subtitulo">Sua dose diária de felicidade.</p>
+                  </div>
+                  <!-- Corpo do Cardápio Simulador -->
+                  <div class="mockup-corpo">
+                    <div class="mockup-categoria-tabs">
+                      <span class="mock-tab ativo">Batatas</span>
+                      <span class="mock-tab">Combos</span>
+                      <span class="mock-tab">Bebidas</span>
+                    </div>
+
+                    <div class="mockup-card-produto">
+                      <div class="mock-prod-info">
+                        <strong>Batata Recheada Especial</strong>
+                        <p>Catupiry, bacon crocante, cheddar e ervas finas.</p>
+                        <span class="mock-preco">R$ 32,90</span>
+                      </div>
+                      <button type="button" class="mock-btn-adicionar">+</button>
+                    </div>
+
+                    <div class="mockup-card-produto">
+                      <div class="mock-prod-info">
+                        <strong>Combo Individual Drako</strong>
+                        <p>1 Batata M + Refrigerante Lata 350ml.</p>
+                        <span class="mock-preco">R$ 38,00</span>
+                      </div>
+                      <button type="button" class="mock-btn-adicionar">+</button>
+                    </div>
+
+                    <button type="button" class="mockup-btn-sacola">
+                      <span>🛍️ Ver Sacola (2 itens)</span>
+                      <span>R$ 70,90</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
       </section>
 
       <!-- CONFIGURAÇÕES -->

@@ -1,22 +1,38 @@
 :root {
-  /* Cores de Identidade Visual (Compatíveis com Firebase) */
-  --vermelho-principal: #516e03;
-  --vermelho-escuro: #2e5902;
-  --laranja-detalhes: #f2f2f2;
+  /* Design Tokens Globais (White-Label & Padrão Drako House) */
+  --cor-primaria: #516e03;
+  --cor-primaria-hover: #405702;
+  --cor-primaria-active: #324402;
+  --cor-primaria-texto: #ffffff;
+  --cor-secundaria: #2e5902;
+  --cor-secundaria-texto: #ffffff;
+  --cor-destaque: #f2f2f2;
+  --cor-fundo: #f4f5f8;
+  --cor-superficie: #ffffff;
+  --cor-superficie-elevada: #f8fafc;
+  --cor-texto: #18191b;
+  --cor-texto-mutado: #6b7280;
+  --cor-texto-claro: #9ca3af;
+  --cor-borda: rgba(0, 0, 0, 0.08);
+
+  /* Variáveis de Compatibilidade Legadas (Consumidas no código atual) */
+  --vermelho-principal: var(--cor-primaria);
+  --vermelho-escuro: var(--cor-secundaria);
+  --laranja-detalhes: var(--cor-destaque);
   --verde-whatsapp: #25d366;
-  --cinza-fundo: #f4f5f8;
+  --cinza-fundo: var(--cor-fundo);
   --branco: #ffffff;
   --fonte-titulo-cabecalho: #ffffff;
   --fonte-subtitulo-cabecalho: rgba(255, 255, 255, 0.9);
-  --cor-categorias: #516e03;
-  --cor-categoria-ativa: #516e03;
-  --texto-escuro: #18191b;
+  --cor-categorias: var(--cor-primaria);
+  --cor-categoria-ativa: var(--cor-primaria);
+  --texto-escuro: var(--cor-texto);
 
-  /* Tokens do Design System Profissional */
+  /* Tokens de Superfície e Efeitos */
   --texto-mutado: #6b7280;
   --texto-claro: #9ca3af;
-  --superficie-card: #ffffff;
-  --borda-suave: rgba(0, 0, 0, 0.07);
+  --superficie-card: var(--cor-superficie);
+  --borda-suave: var(--cor-borda);
   --borda-foco: rgba(81, 110, 3, 0.4);
   --sombra-card: 0 4px 18px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
   --sombra-card-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
@@ -27,6 +43,65 @@
   --raio-input: 12px;
   --raio-btn: 12px;
   --transicao-suave: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --escurecimento-cabecalho: 0.4;
+}
+
+/* ==========================================================================
+   MODO ESCURO DE ALTO NÍVEL (DATA-TEMA="ESCURO")
+   Superfícies em camadas (#0f172a, #1e293b, #334155), contraste balanceado
+   ========================================================================== */
+
+[data-tema="escuro"] {
+  --cor-fundo: #0f172a;
+  --cor-superficie: #1e293b;
+  --cor-superficie-elevada: #334155;
+  --cor-texto: #f8fafc;
+  --cor-texto-mutado: #94a3b8;
+  --cor-texto-claro: #64748b;
+  --cor-borda: rgba(255, 255, 255, 0.12);
+
+  --cinza-fundo: #0f172a;
+  --superficie-card: #1e293b;
+  --texto-escuro: #f8fafc;
+  --texto-mutado: #94a3b8;
+  --texto-claro: #64748b;
+  --borda-suave: rgba(255, 255, 255, 0.12);
+  --sombra-card: 0 4px 18px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --sombra-card-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.5);
+  --sombra-flutuante: 0 16px 36px -6px rgba(0, 0, 0, 0.6);
+  --sombra-modal: 0 24px 60px -12px rgba(0, 0, 0, 0.8);
+}
+
+[data-tema="escuro"] .modal-container,
+[data-tema="escuro"] .card-produto,
+[data-tema="escuro"] .barra-busca-container,
+[data-tema="escuro"] .cart-bar,
+[data-tema="escuro"] .adm-card,
+[data-tema="escuro"] .adm-item {
+  background: var(--cor-superficie) !important;
+  color: var(--cor-texto) !important;
+  border-color: var(--cor-borda) !important;
+}
+
+[data-tema="escuro"] .form-input,
+[data-tema="escuro"] .form-select,
+[data-tema="escuro"] textarea {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+[data-tema="escuro"] .btn-secundario {
+  background: #334155 !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 /* Reset & Base */
@@ -128,7 +203,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.65) 100%);
+  background: rgba(0, 0, 0, var(--escurecimento-cabecalho, 0.4));
   pointer-events: none;
   z-index: 1;
 }

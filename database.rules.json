@@ -130,6 +130,83 @@
         "$outro": {
           ".validate": false
         }
+      },
+      "aparencia": {
+        ".validate": "newData.hasChildren(['versao', 'cores', 'tema', 'atualizadoEm'])",
+        "versao": {
+          ".validate": "newData.isNumber()"
+        },
+        "paleta": {
+          ".validate": "newData.isString() && newData.val().length <= 50"
+        },
+        "cores": {
+          ".validate": "newData.hasChildren(['primaria', 'secundaria', 'destaque', 'fundo'])",
+          "primaria": {
+            ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)"
+          },
+          "secundaria": {
+            ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)"
+          },
+          "destaque": {
+            ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)"
+          },
+          "fundo": {
+            ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)"
+          },
+          "$outro": {
+            ".validate": false
+          }
+        },
+        "tema": {
+          ".validate": "newData.val() === 'claro' || newData.val() === 'escuro' || newData.val() === 'auto'"
+        },
+        "logo": {
+          "src": {
+            ".validate": "newData.isString() && newData.val().length <= 450000"
+          },
+          "largura": {
+            ".validate": "newData.isNumber() && newData.val() >= 40 && newData.val() <= 200"
+          },
+          "$outro": {
+            ".validate": false
+          }
+        },
+        "cabecalho": {
+          "tipo": {
+            ".validate": "newData.val() === 'cor' || newData.val() === 'gradiente' || newData.val() === 'imagem'"
+          },
+          "cor": {
+            ".validate": "newData.isString() && newData.val().length <= 50"
+          },
+          "gradiente": {
+            ".validate": "newData.isString() && newData.val().length <= 200"
+          },
+          "imagem": {
+            ".validate": "newData.isString() && newData.val().length <= 450000"
+          },
+          "escurecimento": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+          },
+          "$outro": {
+            ".validate": false
+          }
+        },
+        "atualizadoEm": {
+          ".validate": "newData.isNumber()"
+        },
+        "atualizadoPor": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "$outro": {
+          ".validate": false
+        }
+      },
+      "aparenciaHistorico": {
+        ".read": "auth != null && root.child('admins').child(auth.uid).val() === true",
+        ".write": "auth != null && root.child('admins').child(auth.uid).val() === true",
+        "$versaoId": {
+          ".validate": "newData.hasChildren(['cores', 'tema', 'atualizadoEm'])"
+        }
       }
     },
     "clientes": {

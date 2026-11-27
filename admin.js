@@ -6,6 +6,7 @@ import { ref, get, set, update, remove, push, onValue, onChildAdded, onChildChan
   query, orderByChild, limitToLast } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 import { el, formatarPreco, somenteDigitos, formatarDataHora, toast, comCarregamento, lerLocal, gravarLocal } from './utils.js';
 import * as impressora from './printer.js';
+import { inicializarAbaAparencia } from './aparencia-admin.js';
 
 const STATUS = ['Novo', 'Em preparo', 'Saiu para entrega', 'Entregue', 'Cancelado'];
 const NOMES_TIPO = { batatas: 'Tamanhos M/G + adicionais', combos: 'Combo com sabores', simples: 'Preço único' };
@@ -122,6 +123,7 @@ function iniciarPainel() {
   assinar('configuracoes/statusLoja', (v) => { atualizarBotoesStatusLoja(v !== false); });
   assinarPedidos();
   renderImpressora();
+  inicializarAbaAparencia();
 }
 
 function pararPainel() {

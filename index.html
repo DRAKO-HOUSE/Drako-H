@@ -13,6 +13,24 @@
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <!-- Prevenção Instantânea de Flash de Tema Incorreto (Anti-FOUC) -->
+    <script>
+        (function() {
+            try {
+                var c = localStorage.getItem('drako_aparencia_cache_v1');
+                if (c) {
+                    var d = JSON.parse(c);
+                    var escuro = d.tema === 'escuro' || (d.tema === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    document.documentElement.setAttribute('data-tema', escuro ? 'escuro' : 'claro');
+                    if (d.cores && d.cores.primaria) document.documentElement.style.setProperty('--cor-primaria', d.cores.primaria);
+                    if (d.cores && d.cores.secundaria) document.documentElement.style.setProperty('--cor-secundaria', d.cores.secundaria);
+                    if (d.cores && d.cores.destaque) document.documentElement.style.setProperty('--cor-destaque', d.cores.destaque);
+                    if (d.cores && d.cores.fundo) document.documentElement.style.setProperty('--cor-fundo', escuro ? '#0f172a' : d.cores.fundo);
+                }
+            } catch(e) {}
+        })();
+    </script>
 </head>
 
 <body>
@@ -662,6 +680,7 @@
         };
         firebase.initializeApp(firebaseConfig);
     </script>
+    <script src="aparencia-cliente.js"></script>
     <script src="script.js"></script>
 </body>
 
