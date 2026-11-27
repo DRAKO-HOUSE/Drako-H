@@ -1,0 +1,12 @@
+{
+  "name": "drako-house",
+  "version": "1.0.0",
+  "description": "Cardápio digital e sistema de pedidos Drako House",
+  "main": "api/notificar.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}

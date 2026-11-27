@@ -323,6 +323,10 @@
         },
         "$outro": {
           ".validate": false
+        },
+        "notificado": {
+          ".write": false,
+          ".validate": "newData.isBoolean()"
         }
       }
     },
@@ -355,6 +359,12 @@
         "$outro": {
           ".validate": false
         }
+      }
+    },
+    "adminTokens": {
+      "$uid": {
+        ".read": false,
+        ".write": "auth != null && auth.uid === $uid && root.child('admins').child(auth.uid).val() === true"
       }
     }
   }

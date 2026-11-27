@@ -1439,6 +1439,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 [`pedidosStatus/${idPedido}`]: pedidoPublico
             }).then(() => {
                 mostrarToast(`✅ Pedido #${codigoPedido} registrado! Acompanhe em "Meus pedidos".`);
+                // Disparo não-bloqueante do push ao dono do restaurante
+                try {
+                    fetch('https://drako-house.vercel.app/api/notificar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ pedidoId: idPedido }),
+                        keepalive: true
+                    }).catch(() => {});
+                } catch (e) {}
             }).catch(err => {
                 console.error('Erro ao salvar pedido no Firebase:', err);
                 mostrarToast('Pedido enviado pelo WhatsApp, mas não foi possível registrar no sistema.', 'erro');

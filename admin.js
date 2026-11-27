@@ -7,6 +7,7 @@ import { ref, get, set, update, remove, push, onValue, onChildAdded, onChildChan
 import { el, formatarPreco, somenteDigitos, formatarDataHora, toast, comCarregamento, lerLocal, gravarLocal } from './utils.js';
 import * as impressora from './printer.js';
 import { inicializarAbaAparencia } from './aparencia-admin.js';
+import { iniciarPush } from './push.js';
 
 const STATUS = ['Novo', 'Em preparo', 'Saiu para entrega', 'Entregue', 'Cancelado'];
 const NOMES_TIPO = { batatas: 'Tamanhos M/G + adicionais', combos: 'Combo com sabores', simples: 'Preço único' };
@@ -81,6 +82,11 @@ onAuthStateChanged(auth, async (usuario) => {
     $('email-logado').textContent = usuario.email;
     mostrarTela('painel');
     iniciarPainel();
+    iniciarPush();
+    if (window.location.hash === '#pedidos') {
+      const btnAbaPedidos = document.querySelector('.adm-abas [data-aba="pedidos"]');
+      if (btnAbaPedidos) btnAbaPedidos.click();
+    }
   } catch (erro) {
     await signOut(auth);
     mostrarErroLogin(traduzirErroBanco(erro));

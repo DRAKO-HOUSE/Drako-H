@@ -1,0 +1,25 @@
+{
+  "name": "Drako House - Painel Administrativo",
+  "short_name": "Drako Admin",
+  "description": "Painel de Gestão e Pedidos em Tempo Real - DRAKO HOUSE",
+  "start_url": "/admin.html#pedidos",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121212",
+  "theme_color": "#2e5902",
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
