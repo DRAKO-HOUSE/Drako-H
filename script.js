@@ -1265,6 +1265,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Finalização e Envio do Pedido via WhatsApp ---
 
     window.enviarPedido = () => {
+        if (typeof window.lojaAbertaParaPedidos !== 'undefined' && !window.lojaAbertaParaPedidos) {
+            alert("A loja está fechada no momento e não está aceitando novos pedidos.");
+            return;
+        }
+
         if (totalItens === 0) {
             alert("Sua sacola está vazia!");
             return;
@@ -1651,13 +1656,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Monitoramento do Status da Loja ---
 
+window.lojaAbertaParaPedidos = true;
+
 function monitorarStatusLoja() {
     if (typeof firebase === 'undefined') return;
     firebase.database().ref('configuracoes/statusLoja').on('value', (snapshot) => {
-        const estaAberta = snapshot.val();
+        const val = snapshot.val();
+        const estaAberta = val !== false;
+        window.lojaAbertaParaPedidos = estaAberta;
+
         const overlay = document.getElementById('overlay-fechado');
         const dot = document.getElementById('status-dot');
         const txtStatus = document.getElementById('texto-status-loja');
+        const btnFinalizar = document.getElementById('btn-finalizar');
 
         if (dot && txtStatus) {
             if (estaAberta) {
@@ -1665,7 +1676,7 @@ function monitorarStatusLoja() {
                 txtStatus.innerText = 'Aberto para Pedidos';
             } else {
                 dot.className = 'status-dot fechado';
-                txtStatus.innerText = 'Loja Fechada no Momento';
+                txtStatus.innerText = 'Loja fechada no momento';
             }
         }
 
@@ -1677,6 +1688,13 @@ function monitorarStatusLoja() {
                 // Notifica que está fechado, mas não trava navegação após fechar
                 overlay.style.display = 'flex';
             }
+        }
+
+        if (btnFinalizar) {
+            btnFinalizar.disabled = !estaAberta;
+            btnFinalizar.style.opacity = estaAberta ? '1' : '0.5';
+            btnFinalizar.style.cursor = estaAberta ? 'pointer' : 'not-allowed';
+            btnFinalizar.title = estaAberta ? '' : 'Loja fechada no momento';
         }
     });
 }

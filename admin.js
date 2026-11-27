@@ -119,7 +119,7 @@ function iniciarPainel() {
   assinar('bairros', (v) => { estado.bairros = v || {}; renderBairros(); });
   assinar('configuracoes/entrega', (v) => { if (v) estado.entrega = v; renderEntrega(); });
   assinar('configuracoes/restaurante', (v) => { estado.restaurante = v || {}; renderConfig(); });
-  assinar('configuracoes/statusLoja', (v) => { $('loja-aberta').checked = v !== false; });
+  assinar('configuracoes/statusLoja', (v) => { atualizarBotoesStatusLoja(v !== false); });
   assinarPedidos();
   renderImpressora();
 }
@@ -555,9 +555,20 @@ function renderConfig() {
   $('cfg-mensagem').value = r.mensagemWhatsapp || '';
 }
 
-$('loja-aberta').addEventListener('change', (e) =>
-  gravar(null, () => set(ref(db, 'configuracoes/statusLoja'), e.target.checked),
-    e.target.checked ? 'Loja aberta.' : 'Loja fechada.'));
+function atualizarBotoesStatusLoja(aberta) {
+  const btnAberta = $('btn-loja-aberta');
+  const btnFechada = $('btn-loja-fechada');
+  if (!btnAberta || !btnFechada) return;
+
+  btnAberta.classList.toggle('ativo', aberta);
+  btnFechada.classList.toggle('ativo', !aberta);
+}
+
+$('btn-loja-aberta')?.addEventListener('click', (e) =>
+  gravar(e.currentTarget, () => set(ref(db, 'configuracoes/statusLoja'), true), 'Loja aberta.'));
+
+$('btn-loja-fechada')?.addEventListener('click', (e) =>
+  gravar(e.currentTarget, () => set(ref(db, 'configuracoes/statusLoja'), false), 'Loja fechada.'));
 
 $('form-config').addEventListener('submit', async (e) => {
   e.preventDefault();

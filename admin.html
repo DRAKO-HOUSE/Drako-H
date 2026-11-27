@@ -160,8 +160,11 @@
       <!-- CONFIGURAÇÕES -->
       <section id="aba-config" data-aba-conteudo hidden>
         <div class="adm-card adm-form">
-          <h2>Loja</h2>
-          <label class="adm-check"><input type="checkbox" id="loja-aberta"> Loja aberta para pedidos</label>
+          <h2>Status da Loja</h2>
+          <div class="status-loja-seletor" role="group" aria-label="Status da loja">
+            <button type="button" id="btn-loja-aberta" class="btn-status-loja">🟢 Loja aberta</button>
+            <button type="button" id="btn-loja-fechada" class="btn-status-loja">🔴 Loja fechada</button>
+          </div>
         </div>
         <form id="form-config" class="adm-card adm-form" novalidate>
           <h2>Dados do restaurante</h2>
